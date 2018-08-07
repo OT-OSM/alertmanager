@@ -43,7 +43,6 @@ Here is an example for the main playbook
 ```yaml
 ---
 - hosts: alertmanager
-  user: root
   roles:
     -  alertmanager
 ```
@@ -51,7 +50,6 @@ Here We are using root as an user but you can use different user, For that you j
 ```yaml
 ---
 - hosts: alertmanager
-  user: test-user
   become: true
   roles:
     -  alertmanager
@@ -97,3 +95,5 @@ BSD
 ## Author Information
 
 This role is written and maintained by [Abhishek Dubey](https://gitlab.com/abhishek-dubey). If you have any queries and sugesstion, please feel free to reach.
+
+Email ID:- [abhishek.dubey@opstree.com]()
