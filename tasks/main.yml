@@ -1,0 +1,11 @@
+---
+# tasks file for alertmanager
+- name: Install Alertmanager on Debian
+  include: debian.yml
+  when:
+    ansible_os_family == "Debian"
+
+- name: Install Alertmanager on RedHat
+  include: redhat.yml
+  when:
+    ansible_os_family == "RedHat"

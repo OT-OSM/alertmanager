@@ -1,0 +1,29 @@
+global:
+
+templates:
+- '/etc/alertmanager/*.tmpl'
+# The root route on which each incoming alert enters.
+route:
+  # default route if none match
+  receiver: alert-emailer
+
+  # The labels by which incoming alerts are grouped together. For example,
+  # multiple alerts coming in for cluster=A and alertname=LatencyHigh would
+  # be batched into a single group.
+  # TODO:
+  group_by: ['alertname', 'priority']
+
+  # All the above attributes are inherited by all child routes and can
+  # overwritten on each.
+
+receivers:
+- name: alert-emailer
+  email_configs:
+  - to: '{{ sender_email }}'
+    send_resolved: false
+    from: '{{ alertmanager_email }}'
+    smarthost: '{{ smtp_server }}'
+    auth_username: '{{ alertmanager_email }}'
+    auth_password: ''
+    auth_secret: '{{ alertmanager_email }}'
+    auth_identity: '{{ alertmanager_email }}'

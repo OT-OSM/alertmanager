@@ -1,0 +1,58 @@
+---
+- name: Updating the repo and cache
+  apt:
+    update_cache: yes
+
+- name: Creating service user
+  user:
+   name: alertmanager
+   shell: /bin/false
+
+- name: Download and install Unzip and Systemd
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - unzip
+    - systemd
+  
+- name: Downloading the binary file for Alertmanager
+  unarchive:
+    src: https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-amd64.tar.gz
+    dest: /opt/
+    remote_src: yes
+
+- name: Move the binary executable file
+  copy: 
+    src: /opt/alertmanager-{{ alertmanager_version }}.linux-amd64/alertmanager
+    dest: /usr/bin/
+    mode: 555
+    remote_src: yes
+
+- name: Create Data and Configuration Directory for Alertmanager
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: alertmanager
+    group: alertmanager
+  with_items:
+    - /var/lib/alertmanager
+    - /etc/alertmanager
+
+- name: Adding Alertmanager Configuration
+  template:
+    src: alertmanager.yml.j2
+    dest: /etc/alertmanager/alertmanager.yml
+
+- name: Adding Email Template for Alertmanager
+  copy:
+    src: email.tmpl
+    dest: /etc/alertmanager/email.tmpl
+
+- name: Copy Service for Alertmanager
+  template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+  notify:
+    - reload_alertmanager_service
+    - restart_alertmanager_service

@@ -1,0 +1,6 @@
+---
+- hosts: alertmanager
+  user: 
+  become: true
+  roles:
+    -  alertmanager
