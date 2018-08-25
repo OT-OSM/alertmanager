@@ -3,6 +3,7 @@
   user:
    name: alertmanager
    shell: /bin/false
+   state: present
 
 - name: Download and install Unzip
   yum:
