@@ -1,0 +1,11 @@
+---
+# handlers file for alertmanager
+- name: reload_alertmanager_service
+  systemd:
+    daemon_reload: yes
+
+- name: restart_alertmanager_service
+  service:
+    name: alertmanager
+    state: restarted
+    enabled: yes
