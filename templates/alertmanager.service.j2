@@ -2,7 +2,7 @@
 Description=Alertmanager Service
 
 [Service]
-User=vagrant
+User=root
 ExecStart=/usr/bin/alertmanager \
           --config.file=/etc/alertmanager/alertmanager.yml \
           --storage.path=/var/lib/alertmanager 
