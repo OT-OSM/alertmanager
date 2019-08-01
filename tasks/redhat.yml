@@ -30,7 +30,7 @@
   copy:
     src: /opt/alertmanager-{{ alertmanager_version }}.linux-amd64/alertmanager
     dest: /usr/bin/
-    mode: 555
+    mode: '0555'
     remote_src: yes
 
 - name: Copy init script of Alertmanager for Centos 6
