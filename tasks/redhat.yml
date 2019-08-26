@@ -1,9 +1,9 @@
 ---
 - name: Creating service user
   user:
-   name: alertmanager
-   shell: /bin/false
-   state: present
+    name: alertmanager
+    shell: /bin/false
+    state: present
 
 - name: Download and install Unzip
   yum:
@@ -27,17 +27,17 @@
     remote_src: yes
 
 - name: Move the binary executable file
-  copy: 
+  copy:
     src: /opt/alertmanager-{{ alertmanager_version }}.linux-amd64/alertmanager
     dest: /usr/bin/
-    mode: 555
+    mode: '0555'
     remote_src: yes
 
 - name: Copy init script of Alertmanager for Centos 6
   copy:
     src: alertmanager.init
     dest: /etc/init.d/alertmanager
-    mode: '555'
+    mode: '0555'
   when:
     ansible_distribution_major_version == "6"
 
@@ -73,7 +73,7 @@
     ansible_distribution_major_version == "7"
 
 - name: Restarting the init alertmanager service
-  service: 
+  service:
     name: alertmanager
     state: started
   when:
