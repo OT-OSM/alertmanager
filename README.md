@@ -1,3 +1,6 @@
+[![Apache License](https://img.shields.io/badge/License-Apache%202.2-blue.svg)](LICENSE)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/OT-OSM/alertmanager)
+
 # Ansible Role for Alertmanager
 
 Alertmanager is tool that handles alerts sent by Prometheus. It gets the alert from Prometheus server and make groups of alerts on the basis of labels and after that it will forward the alert to different reciever such as Email, PagerDuty, Slack.
