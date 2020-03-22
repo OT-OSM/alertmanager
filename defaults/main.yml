@@ -1,6 +1,6 @@
 ---
 # defaults file for alertmanager
-alertmanager_version: "0.15.1"
+alertmanager_version: "0.20.0"
 sender_email: "send.test@example.com"
 alertmanager_email: "alertmanager.test@example.com"
 smtp_server: "smtp.gmail.com:587"

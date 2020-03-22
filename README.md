@@ -60,6 +60,9 @@ For inventory you can create a host file in which you can define your server ip,
 ```
 [alertmanager]
 10.1.1.100
+
+[prometheus]
+10.1.1.100
 ```
 
 You can simply use this role by using this command
