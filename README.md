@@ -64,6 +64,7 @@ For inventory you can create a host file in which you can define your server ip,
 [prometheus]
 10.1.1.100
 ```
+Note: Please Add Prometheus Server Also, Add Configuration of Alert Manager in prometheus.yml file
 
 You can simply use this role by using this command
 ```shell
