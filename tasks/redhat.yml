@@ -73,7 +73,7 @@
     ansible_distribution_major_version == "7"
 
 - name: Restarting the init alertmanager service
-  service: 
+  service:
     name: alertmanager
     state: started
   when:
