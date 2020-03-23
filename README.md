@@ -92,9 +92,6 @@ License
 -------
 BSD
 
-Future Proposed Changes
------------------------
-
 References
 ----------
 - **[software](https://prometheus.io/docs/alerting/alertmanager/)**
