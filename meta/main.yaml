@@ -15,12 +15,12 @@ galaxy_info:
         - xenial
         - bionic
   galaxy_tags:
-        - alertmanager
-        - prometheus
-        - opstree
-        - otosm
-        - devops
-        - devsecops
-  dependencies:
-        - prometheus-server
-        - libselinux-python
+    - alertmanager
+    - prometheus
+    - opstree
+    - otosm
+    - devops
+    - devsecops
+dependencies:
+  - prometheus-server
+  - libselinux-python

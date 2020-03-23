@@ -3,9 +3,8 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
-  enabled: False
+lint: |
+        yamllint .
 platforms:
   - name: ubuntu-16.04
     image: solita/ubuntu-systemd
@@ -18,14 +17,14 @@ platforms:
       - /run
       - /tmp
       - /run/lock
-    volumes: 
+    volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    
+
   - name: centos-7
     image: solita/centos-systemd
     image_version: latest
     privileged: True
-    volumes: 
+    volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     command: '/usr/sbin/init'
     capabilities: SYS_ADMIN
@@ -42,15 +41,14 @@ verifier:
 scenario:
   name: default
   test_sequence:        # molecule test
-   - lint
-   - cleanup
-   - destroy
-   - dependency
-   - syntax
-   - create
-   - prepare
-   - converge
-   - side_effect
-   - verify
-   - cleanup
-   - destroy
+    - lint
+    - cleanup
+    - destroy
+    - dependency
+    - create
+    - prepare
+    - converge
+    - side_effect
+    - verify
+    - cleanup
+    - destroy

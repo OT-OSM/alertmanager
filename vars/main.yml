@@ -1,0 +1,5 @@
+---
+alertmanager_version: "0.15.1"
+smtp_server: "smtp.gmail.com:587"
+sender_email: "send.test@example.com"
+alertmanager_email: "alertmanager.test@example.com"
