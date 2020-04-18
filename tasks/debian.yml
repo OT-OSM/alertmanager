@@ -57,4 +57,13 @@
   notify:
     - reload_alertmanager_service
     - restart_alertmanager_service
+
+- name: Copy Prometheus Configuratio file
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+  notify:
+    - restart_alertmanager_service
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['prometheus'] }}"
 ...

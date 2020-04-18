@@ -6,6 +6,10 @@
 
 - name: restart_alertmanager_service
   service:
-    name: alertmanager
+    name: "{{ item }}"
     state: restarted
     enabled: yes
+  loop:
+    - alertmanager
+    - prometheus
+...
