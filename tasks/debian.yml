@@ -27,7 +27,7 @@
   copy:
     src: /opt/alertmanager-{{ alertmanager_version }}.linux-amd64/alertmanager
     dest: /usr/bin/
-    mode: 0555
+    mode: 0550
     remote_src: yes
 
 - name: Create Data and Configuration Directory for Alertmanager
@@ -62,6 +62,8 @@
   template:
     src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
   notify:
     - restart_alertmanager_service
   delegate_to: "{{ item }}"
