@@ -1,0 +1,119 @@
+groups:
+- name: Node Alert Rules
+  rules:
+  - alert: MemoryAvailable
+    expr: mem_available_percent < 20
+    for: 5m
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Out of Ram Memory (instance {{ $labels.instance }})"
+      description: "Ram is less then 20%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: MemoryAvailable
+    expr: mem_available_percent < 10
+    for: 5m
+    labels:
+      severity: "high"
+    annotations:
+      summary: "Out of Ram Memory (instance {{ $labels.instance }})"
+      description: "Ram is less then 5%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: MemoryAvailable
+    expr: mem_available_percent < 5
+    for: 5m
+    labels:
+      severity: "disaster"
+    annotations:
+      summary: "Out of Ram Memory (instance {{ $labels.instance }})"
+      description: "Ram is less then 5%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: SwapSpaceUsage
+    expr: swap_used_percent > 80
+    for: 5m
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Out of Swap Memory (instance {{ $labels.instance }})"
+      description: "Swap Space is almost full (< 20% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: SwapSpaceUsage
+    expr: swap_used_percent > 90
+    for: 5m
+    labels:
+      severity: "high"
+    annotations:
+      summary: "Out of Swap Memory (instance {{ $labels.instance }})"
+      description: "Swap Space is almost full (< 10% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: SwapSpaceUsage
+    expr: swap_used_percent > 95
+    for: 5m
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "Out of Swap Memory (instance {{ $labels.instance }})"
+      description: "Swap Space is almost full (< 5% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: DiskMemmoryFull
+    expr: disk_used_percent > 80
+    for: 5m
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "Disk is almost full (< 20% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: DiskMemmoryFull
+    expr: disk_used_percent > 90
+    for: 5m
+    labels:
+      severity: "high"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "Disk is almost full (< 10% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: DiskMemmoryFull
+    expr: disk_used_percent > 95
+    for: 5m
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "Disk is almost full (< 5% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HighCpuLoad
+    expr: cpu_usage_idle > 20
+    for: 5m
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "High CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 80%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HighCpuLoad
+    expr: cpu_usage_idle > 10
+    for: 5m
+    labels:
+      severity: "high"
+    annotations:
+      summary: "High CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 90%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HighCpuLoad
+    expr: cpu_usage_idle > 5
+    for: 5m
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "High CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 95%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HostOutOfInodes
+    expr: (disk_inodes_used / disk_inodes_total ) * 100 > 90
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host out of inodes (instance {{ $labels.instance }})"
+      description: "Disk is almost running out of available inodes (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

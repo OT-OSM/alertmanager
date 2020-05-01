@@ -20,11 +20,17 @@
   when:
     ansible_distribution_major_version == "7"
 
+- name: Checking Alertmanager Binary
+  stat:
+    path: "{{ prometheus_binary_path }}/alertmanager"
+  register: check_alartmanager_binary
+
 - name: Downloading the binary file for Alertmanager
   unarchive:
     src: https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-amd64.tar.gz
     dest: /opt/
     remote_src: yes
+  when: check_alartmanager_binary.stat.exists == false
 
 - name: Move the binary executable file
   copy:

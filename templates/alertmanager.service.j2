@@ -3,7 +3,7 @@ Description=Alertmanager Service
 
 [Service]
 User=root
-ExecStart=/usr/bin/alertmanager \
+ExecStart={{ alertmanager_binary_path }}/alertmanager \
           --config.file=/etc/alertmanager/alertmanager.yml \
           --storage.path=/var/lib/alertmanager 
 
