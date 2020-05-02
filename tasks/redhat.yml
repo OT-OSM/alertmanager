@@ -78,15 +78,27 @@
     state: started
   when:
     ansible_distribution_major_version == "6"
+    
+- name: Collecting Private IP of Alertmanager
+  setup:
+    gather_subset:
+      - network
+  register: private_ip
 
-- name: Copy Prometheus Configuratio file
-  template:
-    src: prometheus.yml.j2
-    dest: /etc/prometheus/prometheus.yml
-    owner: "{{ prometheus_user }}"
-    group: "{{ prometheus_group }}"
-  notify:
-    - restart_alertmanager_service
+- name: Geting Private IP
+  debug:
+    msg: "{{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}"
+
+- name: adding Config in Prometheus Configration file
+  blockinfile:
+    path: /etc/prometheus/prometheus.yml
+    insertbefore: "scrape_configs"
+    block: |
+        alerting:
+          alertmanagers:
+            - static_configs:
+              - targets:
+                - {{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}:9093
   delegate_to: "{{ item }}"
-  loop: "{{ groups['prometheus'] }}"
+  loop: "{{groups['prometheus']}}"
 ...
