@@ -2,7 +2,7 @@
 galaxy_info:
   author: abhishek.dubey@opstree.com
   description: Alertmanager is tool that handles alerts sent by Prometheus.
-  company: "Opstre Solutions"
+  company: "Opstree Solutions"
   license: "license (BSD, MIT)"
   min_ansible_version: 2.3
   platforms:
@@ -22,5 +22,5 @@ galaxy_info:
     - devops
     - devsecops
 dependencies:
-  - prometheus-server
-  - libselinux-python
+  - opstree_devops.prometheus
+...
