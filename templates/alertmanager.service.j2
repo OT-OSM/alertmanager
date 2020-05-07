@@ -5,7 +5,8 @@ Description=Alertmanager Service
 User=root
 ExecStart={{ alertmanager_binary_path }}/alertmanager \
           --config.file=/etc/alertmanager/alertmanager.yml \
-          --storage.path=/var/lib/alertmanager 
+          --storage.path=/var/lib/alertmanager \
+          --cluster.listen-address=localhost:9094
 
 Restart=on-failure
 
