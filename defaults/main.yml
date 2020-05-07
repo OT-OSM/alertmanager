@@ -7,6 +7,5 @@ smtp_server: "smtp.gmail.com:587"
 prometheus_user: "prometheus"
 prometheus_group: "prometheus"
 alertmanager_binary_path: "/usr/local/bin"
-slack_webhook: "webhook"
+slack_webhook: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
 channel_name: "alerting-channel"
-

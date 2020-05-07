@@ -85,7 +85,7 @@
     state: started
   when:
     ansible_distribution_major_version == "6"
-    
+
 - name: Collecting Private IP of Alertmanager
   setup:
     gather_subset:
