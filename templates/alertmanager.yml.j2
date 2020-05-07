@@ -1,5 +1,4 @@
 global:
-slack_api_url: "{{ slack_webhook }}"
 
 templates:
 - '/etc/alertmanager/*.tmpl'
@@ -31,4 +30,5 @@ receivers:
 - name: 'slack-notifications'
   slack_configs:
   - channel: '{{ channel_name }}'
+    api_url: "{{ slack_webhook }}"
     send_resolved: true
