@@ -35,6 +35,7 @@
     dest: "{{ alertmanager_binary_path }}"
     mode: 0550
     remote_src: yes
+  when: check_alartmanager_binary.stat.exists == false
 
 - name: Create Data and Configuration Directory for Alertmanager
   file:
