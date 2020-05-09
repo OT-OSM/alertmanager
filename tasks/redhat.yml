@@ -1,9 +1,9 @@
 ---
 - name: Creating service user
   user:
-   name: alertmanager
-   shell: /bin/false
-   state: present
+    name: alertmanager
+    shell: /bin/false
+    state: present
 
 - name: Download and install Unzip
   yum:
@@ -27,17 +27,17 @@
 
 - name: Downloading the binary file for Alertmanager
   unarchive:
-    src: https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-amd64.tar.gz
+    src: "{{ download_url }}"
     dest: /opt/
-    remote_src: yes
+    remote_src: "yes"
   when: check_alartmanager_binary.stat.exists == false
 
 - name: Move the binary executable file
   copy:
-    src: /opt/alertmanager-{{ alertmanager_version }}.linux-amd64/alertmanager
+    src: "/opt/{{ alertmanager_dir }}/alertmanager"
     dest: "{{ prometheus_binary_path }}"
     mode: 0550
-    remote_src: yes
+    remote_src: "yes"
   when: check_alartmanager_binary.stat.exists == false
 
 - name: Copy init script of Alertmanager for Centos 6

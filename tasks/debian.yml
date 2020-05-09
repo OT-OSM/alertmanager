@@ -1,13 +1,13 @@
 ---
 - name: Updating the repo and cache
   apt:
-    update_cache: yes
+    update_cache: "yes"
 
 - name: Creating service user
   user:
-   name: alertmanager
-   shell: /bin/false
-   state: present
+    name: alertmanager
+    shell: /bin/false
+    state: present
 
 - name: Download and install Unzip and Systemd
   apt:
@@ -24,17 +24,17 @@
 
 - name: Downloading the binary file for Alertmanager
   unarchive:
-    src: https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-amd64.tar.gz
+    src: "{{ download_url }}"
     dest: /opt/
-    remote_src: yes
+    remote_src: "yes"
   when: check_alartmanager_binary.stat.exists == false
 
 - name: Move the binary executable file
   copy:
-    src: /opt/alertmanager-{{ alertmanager_version }}.linux-amd64/alertmanager
+    src: "/opt/{{ alertmanager_dir }}/alertmanager"
     dest: "{{ alertmanager_binary_path }}"
     mode: 0550
-    remote_src: yes
+    remote_src: "yes"
   when: check_alartmanager_binary.stat.exists == false
 
 - name: Create Data and Configuration Directory for Alertmanager
