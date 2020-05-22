@@ -1,0 +1,55 @@
+---
+- name: Creating Calert Directory for Configuration files
+  file:
+    path: "{{ calert_home }}"
+    state: directory
+    mode: 0750
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+
+- name: Checking Calert Binary
+  stat:
+    path: "{{ binary_path }}/calert"
+  register: check_calert_binary
+
+- name: Downloading Carlet binary
+  unarchive:
+    src: "{{ calert_download_url }}"
+    dest: /tmp/
+    remote_src: yes
+  when: check_calert_binary.stat.exists == false
+
+- name: Copy Binary to Given Path
+  copy:
+    src: /tmp/calert
+    dest: "{{ binary_path }}"
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    remote_src: yes
+    mode: 0750
+
+- name: Copy Calert Template for Google Chat
+  copy:
+    src: google_chat_calert.tmpl
+    dest: "{{ calert_home }}/message.tmpl"
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    mode: 0640
+
+- name: Copy Service amd Config file for Alertmanager
+  template:
+    src: "{{ item.source }}"
+    dest: "{{ item.destination }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+  with_items:
+    - { source: "calert.service.j2", destination: "/etc/systemd/system/calert.service", owner: "root", group: "root" }
+    - { source: "calert.toml.j2", destination: "{{ calert_home }}/calert.toml", owner: "{{ alertmanager_user }}", group: "{{ alertmanager_group }}" }
+  notify:
+    - reload_calert_service
+    - restart_alertmanager_service
+
+
+
+
+    

@@ -12,4 +12,10 @@
   loop:
     - alertmanager
     - prometheus
+
+- name: reload_calert_service
+  service:
+    name: calert
+    state: restarted
+    enabled: yes
 ...

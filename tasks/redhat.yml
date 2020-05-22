@@ -107,5 +107,5 @@
               - targets:
                 - {{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}:9093
   delegate_to: "{{ item }}"
-  loop: "{{groups['prometheus']}}"
+  loop: "{{ groups['prometheus'] }}"
 ...

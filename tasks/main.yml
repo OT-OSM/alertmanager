@@ -9,4 +9,9 @@
   include: redhat.yml
   when:
     ansible_os_family == "RedHat"
+
+- name: Install Alertmanager on RedHat
+  include: calert.yml
+  when:
+    googe_chat == "yes"
 ...

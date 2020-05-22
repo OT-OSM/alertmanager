@@ -1,0 +1,23 @@
+# All timeouts and durations are in milliseconds.
+
+[server]
+address = ":6000"
+socket = "/tmp/calert.sock"
+name = "calert"
+
+# WARNING If these timeouts are less than 1s,
+# the server connection breaks.
+read_timeout=5000
+write_timeout=5000
+keepalive_timeout=300000
+
+[app]
+template_file = "{{ calert_home }}/message.tmpl"
+max_size = 4000
+
+[app.http_client]
+max_idle_conns =  100
+request_timeout = 8000
+
+[app.chat.{{ google_chat_room }}]
+notification_url = "{{ room_webhook }}"

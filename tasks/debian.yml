@@ -19,7 +19,7 @@
 
 - name: Checking Alertmanager Binary
   stat:
-    path: "{{ alertmanager_binary_path }}/alertmanager"
+    path: "{{ binary_path }}/alertmanager"
   register: check_alartmanager_binary
 
 - name: Downloading the binary file for Alertmanager
@@ -32,7 +32,7 @@
 - name: Move the binary executable file
   copy:
     src: "/opt/{{ alertmanager_dir }}/alertmanager"
-    dest: "{{ alertmanager_binary_path }}"
+    dest: "{{ binary_path }}"
     mode: 0550
     remote_src: "yes"
   when: check_alartmanager_binary.stat.exists == false
@@ -41,8 +41,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: alertmanager
-    group: alertmanager
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
   with_items:
     - /var/lib/alertmanager
     - /etc/alertmanager
