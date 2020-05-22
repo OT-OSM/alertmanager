@@ -20,7 +20,7 @@ channel_name: "alerting-channel"
 
 # Google Chat Integration
 google_chat: yes
-calert_home: "/opt/calert/"
+calert_home: "/opt/calert"
 calert_download_url: "https://github.com/mr-karan/calert/releases/download/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
 google_chat_room: "alerts"
 room_webhook: "https://chat.googleapis.com/v1/spaces/AAAAD-voE50/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=QeFJVK4ztJZeR-XyP4FZ4Ymn3jzc59rlxbY5-g8S-aE%3D"
