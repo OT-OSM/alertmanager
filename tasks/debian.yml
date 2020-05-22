@@ -51,11 +51,18 @@
   template:
     src: alertmanager.yml.j2
     dest: /etc/alertmanager/alertmanager.yml
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+    mode: 0750
+  tags: test
 
 - name: Adding Email Template for Alertmanager
   copy:
     src: email.tmpl
     dest: /etc/alertmanager/email.tmpl
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+    mode: 0750
 
 - name: Copy Service for Alertmanager
   template:

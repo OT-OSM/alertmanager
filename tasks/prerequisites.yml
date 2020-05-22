@@ -1,0 +1,5 @@
+---
+- name: Checking zookeeper hosts are defined or not
+  fail:
+    msg: "Playbook execution failed due to missing or empty required group 'zookeeper'"
+  when: groups['prometheus'] is not defined or groups['zookeeper'] | length == 0
