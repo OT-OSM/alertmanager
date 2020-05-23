@@ -83,7 +83,7 @@ groups:
       description: "Disk is almost full (< 5% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
 
   - alert: HighCpuLoad
-    expr: cpu_usage_idle > 20
+    expr: cpu_usage_idle < 20
     for: 5m
     labels:
       severity: "warning"
@@ -92,7 +92,7 @@ groups:
       description: "CPU load is > 80%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
 
   - alert: HighCpuLoad
-    expr: cpu_usage_idle > 10
+    expr: cpu_usage_idle < 10
     for: 5m
     labels:
       severity: "high"
@@ -101,7 +101,7 @@ groups:
       description: "CPU load is > 90%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
 
   - alert: HighCpuLoad
-    expr: cpu_usage_idle > 5
+    expr: cpu_usage_idle < 5
     for: 5m
     labels:
       severity: "critical"

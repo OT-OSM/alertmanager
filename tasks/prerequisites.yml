@@ -1,5 +1,5 @@
 ---
 - name: Checking Pprometheus hosts are defined or not
   fail:
-    msg: "Playbook execution failed due to missing or empty required group 'zookeeper'"
-  when: groups['prometheus'] is not defined or groups['prometheus'] | length == 0
+    msg: "Playbook failed due to missing or empty required group 'prometheus'"
+  when: groups['prometheus'] is not defined or groups['prometheus']|length == 0

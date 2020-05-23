@@ -2,13 +2,13 @@
 # handlers file for alertmanager
 - name: reload_alertmanager_service
   systemd:
-    daemon_reload: yes
+    daemon_reload: "yes"
 
 - name: restart_alertmanager_service
   service:
     name: "{{ item }}"
     state: restarted
-    enabled: yes
+    enabled: "yes"
   loop:
     - alertmanager
     - prometheus
@@ -17,5 +17,5 @@
   service:
     name: calert
     state: restarted
-    enabled: yes
+    enabled: "yes"
 ...

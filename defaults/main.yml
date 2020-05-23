@@ -17,7 +17,7 @@ alertmanager_email: "alertmanager.test@example.com"
 smtp_server: "smtp.gmail.com:587"
 
 # Slack Integration
-slack_integration: "no"
+slack_integration: "yes"
 slack_webhook: "https://hooks.slack.com/services/T00000000/B00/XXXXXX"
 slack_channel_name: "alerting-channel"
 
@@ -25,6 +25,6 @@ slack_channel_name: "alerting-channel"
 google_chat_integration: "yes"
 calert_home: "/opt/calert"
 calert_base_url: "https://github.com/mr-karan/calert/releases/download"
-calert_download_url: "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
+calert_url: "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
 google_chat_room: "alerts"
 room_webhook: "google-chat-room-webhook"
