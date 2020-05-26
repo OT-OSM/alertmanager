@@ -27,6 +27,7 @@
     group: "{{ alertmanager_group }}"
     remote_src: "yes"
     mode: 0750
+  when: check_calert_binary.stat.exists == false
 
 - name: Copy Config file for Alertmanager
   template:
@@ -34,6 +35,7 @@
     dest: "{{ calert_home }}/calert.toml"
     owner: "{{ alertmanager_user }}"
     group: "{{ alertmanager_group }}"
+    mode: 0640
   notify:
     - reload_calert_service
     - restart_alertmanager_service
