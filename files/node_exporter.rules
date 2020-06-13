@@ -1,0 +1,173 @@
+groups:
+- name: Node Alert Rules 
+  rules:
+  - alert: MemoryUsage
+    expr: 100 - ((node_memory_MemAvailable_bytes * 100) / node_memory_MemTotal_bytes) > 80
+    for: 5m
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Out of Ram Memory (instance {{ $labels.instance }})"
+      description: "Ram is less then 20%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: MemoryUsage
+    expr: 100 - ((node_memory_MemAvailable_bytes * 100) / node_memory_MemTotal_bytes) > 90
+    for: 5m
+    labels:
+      severity: "high"
+    annotations:
+      summary: "Out of Ram Memory (instance {{ $labels.instance }})"
+      description: "Ram is less then 10%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: MemoryUsage
+    expr: 100 - ((node_memory_MemAvailable_bytes * 100) / node_memory_MemTotal_bytes) > 95
+    for: 5m
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "Out of Ram Memory (instance {{ $labels.instance }})"
+      description: "Ram is less then 5%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: SwapSpaceUsage
+    expr: ((node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / (node_memory_SwapTotal_bytes)) * 100 > 80
+    for: 5m
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "Swap Space is almost full (< 20% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: SwapSpaceUsage
+    expr: ((node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / (node_memory_SwapTotal_bytes)) * 100 > 90
+    for: 5m
+    labels:
+      severity: "high"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "Swap Space is almost full (< 10% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: SwapSpaceUsage
+    expr: ((node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / (node_memory_SwapTotal_bytes)) * 100 > 95
+    for: 5m
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "Swap Space is almost full (< 5% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: DiskMemmoryFull
+    expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"}) > 80
+    for: 5m
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "/ is almost full (< 20% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: DiskMemmoryFull
+    expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"}) > 90
+    for: 5m
+    labels:
+      severity: "high"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "/ is almost full (< 10% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: DiskMemmoryFull
+    expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"}) > 95
+    for: 5m
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "Out of disk space (instance {{ $labels.instance }})"
+      description: "/ is almost full (< 5% left)  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HighCpuLoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: "warning"
+    annotations:
+      summary: "High CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 80%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HighCpuLoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+    for: 5m
+    labels:
+      severity: "high"
+    annotations:
+      summary: "High CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 90%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HighCpuLoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+    for: 5m
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "High CPU load (instance {{ $labels.instance }})"
+      description: "CPU load is > 95%  VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: HostMemoryUnderMemoryPressure
+    expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host memory under memory pressure (instance {{ $labels.instance }})"
+      description: "The node is under heavy memory pressure. High rate of major page faults\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HostUnusualNetworkThroughputIn
+    expr: sum by (instance) (irate(node_network_receive_bytes_total[2m])) / 1024 / 1024 > 100
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host unusual network throughput in (instance {{ $labels.instance }})"
+      description: "Host network interfaces are probably receiving too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HostUnusualNetworkThroughputOut
+    expr: sum by (instance) (irate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 100
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host unusual network throughput out (instance {{ $labels.instance }})"
+      description: "Host network interfaces are probably sending too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HostUnusualDiskReadRate
+    expr: sum by (instance) (irate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 50
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host unusual disk read rate (instance {{ $labels.instance }})"
+      description: "Disk is probably reading too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HostUnusualDiskWriteRate
+    expr: sum by (instance) (irate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 50
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host unusual disk write rate (instance {{ $labels.instance }})"
+      description: "Disk is probably writing too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HostOutOfInodes
+    expr: node_filesystem_files_free{mountpoint ="/rootfs"} / node_filesystem_files{mountpoint ="/rootfs"} * 100 < 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host out of inodes (instance {{ $labels.instance }})"
+      description: "Disk is almost running out of available inodes (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+  - alert: HostSystemdServiceCrashed
+    expr: node_systemd_unit_state{state="failed"} == 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Host SystemD service crashed (instance {{ $labels.instance }})"
+      description: "SystemD service crashed\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

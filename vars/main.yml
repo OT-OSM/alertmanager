@@ -1,14 +1,8 @@
 ---
-# defaults file for alertmanager
+# vars file for alertmanager
 version: "0.20.0"
-base_url: "https://github.com/prometheus/alertmanager/releases/download"
-alertmanager_dir: "alertmanager-{{ version }}.linux-amd64"
-download_url: "{{ base_url }}/v{{ version }}/{{ alertmanager_dir }}.tar.gz"
-alertmanager_user: "alertmanager"
-alertmanager_group: "alertmanager"
 prometheus_user: "prometheus"
 prometheus_group: "prometheus"
-binary_path: "/usr/local/bin"
 
 # Email Notification
 email_integration: "no"
@@ -17,7 +11,7 @@ alertmanager_email: "alertmanager.test@example.com"
 smtp_server: "smtp.gmail.com:587"
 
 # Slack Integration
-slack_integration: "no"
+slack_integration: "yes"
 slack_webhook: "https://hooks.slack.com/services/T00000000/B00/XXXXXX"
 slack_channel_name: "alerting-channel"
 
