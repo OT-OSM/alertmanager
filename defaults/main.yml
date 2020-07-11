@@ -4,27 +4,5 @@ version: "0.20.0"
 base_url: "https://github.com/prometheus/alertmanager/releases/download"
 alertmanager_dir: "alertmanager-{{ version }}.linux-amd64"
 download_url: "{{ base_url }}/v{{ version }}/{{ alertmanager_dir }}.tar.gz"
-alertmanager_user: "alertmanager"
-alertmanager_group: "alertmanager"
-prometheus_user: "prometheus"
-prometheus_group: "prometheus"
 binary_path: "/usr/local/bin"
 
-# Email Notification
-email_integration: "no"
-sender_email: "send.test@example.com"
-alertmanager_email: "alertmanager.test@example.com"
-smtp_server: "smtp.gmail.com:587"
-
-# Slack Integration
-slack_integration: "no"
-slack_webhook: "https://hooks.slack.com/services/T00000000/B00/XXXXXX"
-slack_channel_name: "alerting-channel"
-
-# Google Chat Integration
-google_chat_integration: "yes"
-calert_home: "/opt/calert"
-calert_base_url: "https://github.com/mr-karan/calert/releases/download"
-calert_url: "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
-google_chat_room: "google-room-name"
-room_webhook: "google-chat-room-webhook"

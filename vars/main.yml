@@ -1,6 +1,8 @@
 ---
 # vars file for alertmanager
 version: "0.20.0"
+alertmanager_user: "alertmanager"
+alertmanager_group: "alertmanager"
 prometheus_user: "prometheus"
 prometheus_group: "prometheus"
 
