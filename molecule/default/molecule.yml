@@ -1,0 +1,54 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+        yamllint .
+platforms:
+  - name: ubuntu-16.04
+    image: solita/ubuntu-systemd
+    image_version: latest
+    privileged: True
+    command: '/sbin/init'
+    security_opts:
+      - seccomp=unconfined
+    tmpfs:
+      - /run
+      - /tmp
+      - /run/lock
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+
+  - name: centos-7
+    image: solita/centos-systemd
+    image_version: latest
+    privileged: True
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    command: '/usr/sbin/init'
+    capabilities: SYS_ADMIN
+
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+    enabled: False
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
+scenario:
+  name: default
+  test_sequence:        # molecule test
+    - lint
+    - cleanup
+    - destroy
+    - dependency
+    - create
+    - prepare
+    - converge
+    - side_effect
+    - verify
+    - cleanup
+    - destroy

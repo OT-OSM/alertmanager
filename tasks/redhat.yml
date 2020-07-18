@@ -7,16 +7,16 @@
 
 - name: Download and install Unzip
   yum:
-    name: "{{ item }}"
+    name: libselinux-python
     state: present
-  with_items:
-    - unzip
-    - libselinux-python
 
-- name: Installing Systemd on Centos
-  yum:
-    name: systemd
-    state: present
+- name: Copying Alertmanger service file for Centos 7
+  template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+  notify:
+    - daemon_reload
+    - restart_alertmanager_service
   when:
     ansible_distribution_major_version == "7"
 
@@ -74,7 +74,6 @@
     src: alertmanager.service.j2
     dest: /etc/systemd/system/alertmanager.service
   notify:
-    - reload_alertmanager_service
     - restart_alertmanager_service
   when:
     ansible_distribution_major_version == "7"

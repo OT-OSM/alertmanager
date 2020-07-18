@@ -1,6 +1,6 @@
 ---
 # handlers file for alertmanager
-- name: reload_alertmanager_service
+- name: daemon_reload
   systemd:
     daemon_reload: "yes"
 
