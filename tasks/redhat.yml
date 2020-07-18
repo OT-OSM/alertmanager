@@ -1,5 +1,11 @@
 ---
-- name: Download the dependencies
+- name: Creating service user
+  user:
+    name: alertmanager
+    shell: /bin/false
+    state: present
+
+- name: Download and install Unzip
   yum:
     name: libselinux-python
     state: present
@@ -14,12 +20,91 @@
   when:
     ansible_distribution_major_version == "7"
 
+- name: Checking Alertmanager Binary
+  stat:
+    path: "{{ prometheus_binary_path }}/alertmanager"
+  register: check_alartmanager_binary
+
+- name: Downloading the binary file for Alertmanager
+  unarchive:
+    src: "{{ download_url }}"
+    dest: /opt/
+    remote_src: "yes"
+  when: check_alartmanager_binary.stat.exists == false
+
+- name: Move the binary executable file
+  copy:
+    src: "/opt/{{ alertmanager_dir }}/alertmanager"
+    dest: "{{ prometheus_binary_path }}"
+    mode: 0550
+    remote_src: "yes"
+  when: check_alartmanager_binary.stat.exists == false
+
 - name: Copy init script of Alertmanager for Centos 6
   copy:
     src: alertmanager.init
     dest: /etc/init.d/alertmanager
-    mode: '0700'
+    mode: 0550
+  when:
+    ansible_distribution_major_version == "6"
+
+- name: Create directory for Alertmanager Configuration, Data and Logs
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: alertmanager
+    group: alertmanager
+  with_items:
+    - /etc/alertmanager
+    - /var/lib/alertmanager
+    - /var/log/alertmanager
+
+- name: Adding Alertmanager Configuration
+  template:
+    src: alertmanager.yml.j2
+    dest: /etc/alertmanager/alertmanager.yml
+
+- name: Adding Email Template for Alertmanager
+  copy:
+    src: email.tmpl
+    dest: /etc/alertmanager/email.tmpl
+
+- name: Copy Service for Prometheus
+  template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
   notify:
     - restart_alertmanager_service
   when:
+    ansible_distribution_major_version == "7"
+
+- name: Restarting the init alertmanager service
+  service:
+    name: alertmanager
+    state: started
+  when:
     ansible_distribution_major_version == "6"
+
+- name: Collecting Private IP of Alertmanager
+  setup:
+    gather_subset:
+      - network
+  register: private_ip
+
+- name: Geting Private IP
+  debug:
+    msg: "{{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}"
+
+- name: adding Config in Prometheus Configration file
+  blockinfile:
+    path: /etc/prometheus/prometheus.yml
+    insertbefore: "scrape_configs"
+    block: |
+        alerting:
+          alertmanagers:
+            - static_configs:
+              - targets:
+                - {{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}:9093
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['prometheus'] }}"
+...

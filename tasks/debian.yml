@@ -1,5 +1,70 @@
 ---
-- name: Copy Alertmanager service
+- name: Updating the repo and cache
+  apt:
+    update_cache: "yes"
+
+- name: Creating service user
+  user:
+    name: alertmanager
+    shell: /bin/false
+    state: present
+
+- name: Download and install Unzip and Systemd
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - unzip
+    - systemd
+
+- name: Checking Alertmanager Binary
+  stat:
+    path: "{{ binary_path }}/alertmanager"
+  register: check_alartmanager_binary
+
+- name: Downloading the binary file for Alertmanager
+  unarchive:
+    src: "{{ download_url }}"
+    dest: /opt/
+    remote_src: "yes"
+  when: check_alartmanager_binary.stat.exists == false
+
+- name: Move the binary executable file
+  copy:
+    src: "/opt/{{ alertmanager_dir }}/alertmanager"
+    dest: "{{ binary_path }}"
+    mode: 0550
+    remote_src: "yes"
+  when: check_alartmanager_binary.stat.exists == false
+
+- name: Create Data and Configuration Directory for Alertmanager
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+  with_items:
+    - /var/lib/alertmanager
+    - /etc/alertmanager
+
+- name: Adding Alertmanager Configuration
+  template:
+    src: alertmanager.yml.j2
+    dest: /etc/alertmanager/alertmanager.yml
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+    mode: 0750
+  tags: test
+
+- name: Adding Email Template for Alertmanager
+  copy:
+    src: email.tmpl
+    dest: /etc/alertmanager/email.tmpl
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_user }}"
+    mode: 0750
+
+- name: Copy Service for Alertmanager
   template:
     src: alertmanager.service.j2
     dest: /etc/systemd/system/alertmanager.service
@@ -18,3 +83,36 @@
     ansible_distribution_major_version == "14"
   notify:
     - restart_alertmanager_service
+
+- name: Collecting Private IP of Alertmanager
+  setup:
+    gather_subset:
+      - network
+  register: private_ip
+
+- name: Geting Private IP
+  debug:
+    msg: "{{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}"
+
+- name: adding Config in Prometheus Configration file
+  blockinfile:
+    path: /etc/prometheus/prometheus.yml
+    insertbefore: "scrape_configs"
+    block: |
+        alerting:
+          alertmanagers:
+            - static_configs:
+              - targets:
+                - {{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}:9093
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['prometheus'] }}"
+
+- name: Adding Alert Rules to Prometheus for telegraf
+  copy:
+    src: telegraf_node.rules
+    dest: /etc/prometheus/telegraf_node.rules
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['prometheus'] }}"
+...

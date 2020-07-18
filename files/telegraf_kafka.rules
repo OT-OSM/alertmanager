@@ -1,0 +1,20 @@
+groups:
+- name: Node Alert Rules
+  rules:
+  - alert: ZookeeperAvgLatency
+    expr: zookeeper_avg_latency > 0
+    for: 5m
+    labels:
+      severity: "critcal"
+    annotations:
+      summary: "Zookeeper Avg. Latency is Increasing"
+      description: "Zookeeper Avg. Latency is greater than 1 minute VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - alert: ZookeeperPendingNodes
+    expr: zookeeper_pending_syncs > 0
+    for: 5m
+    labels:
+      severity: "critcal"
+    annotations:
+      summary: "Zookeeper "
+      description: "Zookeeper Avg. Latency is greater than 1 minute VALUE = {{ $value }}  LABELS: {{ $labels }}"

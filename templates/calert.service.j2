@@ -1,0 +1,12 @@
+[Unit]
+Description=Calert Service
+
+[Service]
+User=root
+ExecStart={{ binary_path }}/calert \
+          --config.file={{ calert_home }}/calert.toml 
+
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

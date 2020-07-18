@@ -1,3 +1,7 @@
 ---
 # defaults file for alertmanager
-alertmanager_base_url: "https://github.com/prometheus/alertmanager/releases/download"
+version: "0.20.0"
+base_url: "https://github.com/prometheus/alertmanager/releases/download"
+alertmanager_dir: "alertmanager-{{ version }}.linux-amd64"
+download_url: "{{ base_url }}/v{{ version }}/{{ alertmanager_dir }}.tar.gz"
+binary_path: "/usr/local/bin"

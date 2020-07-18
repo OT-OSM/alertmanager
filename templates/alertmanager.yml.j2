@@ -2,21 +2,62 @@ global:
 
 templates:
 - '/etc/alertmanager/*.tmpl'
+
 # The root route on which each incoming alert enters.
 route:
-  # default route if none match
-  receiver: alert-emailer
+  {% if google_chat_integration == 'yes' and slack_integration == 'yes' and email_integration == 'yes' -%}
+    {% set defaultlertReciver = "google_slack_email" -%}
+  {% elif google_chat_integration == 'yes' and slack_integration == 'yes' -%}
+    {% set defaultlertReciver = "google_chat_slack" -%}
+  {% elif slack_integration == "yes" -%}
+    {% set defaultlertReciver = slack_channel_name -%}
+  {% elif google_chat_integration == 'yes' %}
+    {% set defaultlertReciver = google_chat_room -%}
+  {% endif -%}
 
-  # The labels by which incoming alerts are grouped together. For example,
-  # multiple alerts coming in for cluster=A and alertname=LatencyHigh would
-  # be batched into a single group.
-  # TODO:
+  receiver: "{{ defaultlertReciver }}"
   group_by: ['alertname', 'priority']
 
-  # All the above attributes are inherited by all child routes and can
-  # overwritten on each.
-
 receivers:
+{% if google_chat_integration == 'yes' and slack_integration == 'yes' and email_integration == 'yes' -%}
+- name: 'google_slack_email'
+  slack_configs:
+  - channel: '{{ slack_channel_name }}'
+    api_url: "{{ slack_webhook }}"
+    send_resolved: true
+  webhook_configs:
+  - url: 'http://localhost:6000/create?room_name={{ google_chat_room }}'
+    send_resolved: true
+  email_configs:
+  - to: '{{ sender_email }}'
+    send_resolved: false
+    from: '{{ alertmanager_email }}'
+    smarthost: '{{ smtp_server }}'
+    auth_username: '{{ alertmanager_email }}'
+    auth_password: ''
+    auth_secret: '{{ alertmanager_email }}'
+    auth_identity: '{{ alertmanager_email }}'
+{% elif google_chat_integration == 'yes' and slack_integration == 'yes' -%}
+- name: 'google_chat_slack'
+  slack_configs:
+  - channel: '{{ slack_channel_name }}'
+    api_url: "{{ slack_webhook }}"
+    send_resolved: true
+  webhook_configs:
+  - url: 'http://localhost:6000/create?room_name={{ google_chat_room }}'
+    send_resolved: true
+{% elif slack_integration == 'yes' -%}
+- name: '{{ slack_channel_name }}'
+  slack_configs:
+  - channel: '{{ slack_channel_name }}'
+    api_url: "{{ slack_webhook }}"
+    send_resolved: true
+{% elif google_chat_integration == 'yes' -%}
+- name: {{ google_chat_room }}
+  webhook_configs:
+  - url: 'http://localhost:6000/create?room_name={{ google_chat_room }}'
+    send_resolved: true
+{% elif email_integration == 'yes' -%}
 - name: alert-emailer
   email_configs:
   - to: '{{ sender_email }}'
@@ -27,3 +68,5 @@ receivers:
     auth_password: ''
     auth_secret: '{{ alertmanager_email }}'
     auth_identity: '{{ alertmanager_email }}'
+{% endif -%}
+
