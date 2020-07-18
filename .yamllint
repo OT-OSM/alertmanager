@@ -1,6 +1,5 @@
 ---
 extends: default
-
 rules:
   braces:
     max-spaces-inside: 1
@@ -9,4 +8,3 @@ rules:
     max-spaces-inside: 1
     level: error
   line-length: disable
-  truthy: disable
