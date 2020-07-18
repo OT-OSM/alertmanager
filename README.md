@@ -4,6 +4,15 @@ Alertmanager is tool that handles alerts sent by Prometheus. It gets the alert f
 
 Alertmanager is configured via using command-line flags and a configuration while. While command line configure system parameters, the configuration file contains the information like recievers and routing.
 
+Version History
+---------------
+
+|**Date**| **Version**| **Description**| **Changed By** |
+|----------|---------|---------------|-----------------|
+|**May  2020** | v0.0.1 | Initial Draft | [Abhishek Dubey](abhishek.dubey@opstree.com) |
+|**July 2020** | v0.1.0 | Added Integration of Slack, Google chat| [Mahesh Kumar](mahesh.kumar@opstree.com) |
+
+
 ## Requirements
 
 There is no particular requirment for running this role. As this role is platform independent for centos 6 or 7 and ubuntu 14 or 16. The only dependency for centos 6 is libselinux-python and we have included that as well.
