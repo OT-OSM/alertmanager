@@ -27,7 +27,7 @@
     src: "{{ download_url }}"
     dest: /opt/
     remote_src: "yes"
-  when: check_alartmanager_binary.stat.exists == false
+  when: not check_alartmanager_binary.stat.exists
 
 - name: Move the binary executable file
   copy:
@@ -35,7 +35,7 @@
     dest: "{{ binary_path }}"
     mode: 0550
     remote_src: "yes"
-  when: check_alartmanager_binary.stat.exists == false
+  when: not check_alartmanager_binary.stat.exists
 
 - name: Create Data and Configuration Directory for Alertmanager
   file:
@@ -92,7 +92,7 @@
 
 - name: Geting Private IP
   debug:
-    msg: "{{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}"
+    msg: "{{ private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',') }}"
 
 - name: adding Config in Prometheus Configration file
   blockinfile:
@@ -103,7 +103,7 @@
           alertmanagers:
             - static_configs:
               - targets:
-                - {{private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',')}}:9093
+                - {{ private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',') }}:9093
   delegate_to: "{{ item }}"
   loop: "{{ groups['prometheus'] }}"
 
