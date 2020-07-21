@@ -1,6 +1,4 @@
 ---
-# -*- coding: utf-8 -*-
-
 stages:
   - yaml-lint
   - ansible-lint
@@ -17,4 +15,3 @@ ansible_lint:
   image: opstree/docker:ansible-lint
   script:
     - ansible-lint .
-...
