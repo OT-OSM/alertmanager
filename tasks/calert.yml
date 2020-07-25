@@ -17,7 +17,7 @@
     src: "{{ calert_url }}"
     dest: /tmp/
     remote_src: "yes"
-  when: check_calert_binary.stat.exists == false
+  when: not check_calert_binary.stat.exists
 
 - name: Copy Binary to Given Path
   copy:
@@ -27,7 +27,7 @@
     group: "{{ alertmanager_group }}"
     remote_src: "yes"
     mode: 0750
-  when: check_calert_binary.stat.exists == false
+  when: not check_calert_binary.stat.exists
 
 - name: Copy Config file for Alertmanager
   template:
