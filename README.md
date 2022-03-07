@@ -118,10 +118,10 @@ Here is an example for the main playbook
   roles:
     - role: alertmanager
       
-
+```
 Here We are using root as an user but you can use different user, For that you just have to make become value true. Something like this:-
+
 ```yaml
----
 ---
 - name: Gather Facts of Agent Nodes
   hosts: agents
