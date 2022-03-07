@@ -72,7 +72,7 @@
     - daemon_reload
     - restart_alertmanager_service
   when:
-    ansible_distribution_major_version == "18" or ansible_distribution_major_version == "16"
+    ansible_distribution_major_version > 14
 
 - name: Copy init script of Alertmanager
   copy:
@@ -107,12 +107,13 @@
   delegate_to: "{{ item }}"
   loop: "{{ groups['prometheus'] }}"
 
-- name: Adding Alert Rules to Prometheus for telegraf
+- name: Adding Alert Rules to Prometheus
   copy:
-    src: telegraf_node.rules
-    dest: /etc/prometheus/telegraf_node.rules
+    src: "{{ rules_file }}"
+    dest: /etc/prometheus/{{ rules_file }}
     owner: "{{ prometheus_user }}"
     group: "{{ prometheus_group }}"
+  
   delegate_to: "{{ item }}"
   loop: "{{ groups['prometheus'] }}"
 ...
