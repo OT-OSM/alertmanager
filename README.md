@@ -16,7 +16,7 @@ Version History
 
 ## Requirements
 
-There is no particular requirment for running this role. As this role is platform independent for centos 6 or 7 and ubuntu 14 or 16. The only dependency for centos 6 is libselinux-python and we have included that as well.
+There is no particular requirment for running this role. As this role is platform independent for centos 6 or above and ubuntu 18 or above. The only dependency for centos 6 is libselinux-python and we have included that as well.
 The basic requirments are:-
 - Centos/Ubuntu Server
 - Python should be installed on the target server
@@ -27,7 +27,7 @@ The basic requirments are:-
 ```yaml
 ---
 # defaults file for alertmanager
-version: "0.20.0"
+alert_version: "0.20.0"
 base_url: "https://github.com/prometheus/alertmanager/releases/download"
 alertmanager_dir: "alertmanager-{{ version }}.linux-amd64"
 download_url: "{{ base_url }}/v{{ version }}/{{ alertmanager_dir }}.tar.gz"
@@ -49,7 +49,7 @@ slack_webhook: "https://hooks.slack.com/services/T00000000/B00/XXXXXX"
 slack_channel_name: "alerting-channel"
 
 # Google Chat Integration
-google_chat_integration: "yes"
+google_chat_integration: "no"
 calert_home: "/opt/calert"
 calert_base_url: "https://github.com/mr-karan/calert/releases/download"
 calert_url: "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
@@ -57,13 +57,13 @@ google_chat_room: "google-room-name"
 room_webhook: "google-chat-room-webhook"
 ```
 
-You can define any prometheus version that you want to install on your server.
+You can define any prometheus version as well as alertmanager version that you want to install on your server.
 
 #### Mandatory Variables
 
 |**Variable**|**Default Value**|**Possible Values**|**Description**|
 |------------|-----------------|-------------------|---------------|
-|version | "0.20.0" | Any Version | Alertmanager will be downloaded from github releases, so you have to define version |
+|alert_version | "0.20.0" | Any Version | Alertmanager will be downloaded from github releases, so you have to define version |
 |alertmanager_user | alertmanager | Any User | Alertmanager Service User|
 |alertmanager_group | alertmanager | Any Group | Alertmanger Service Group |
 |prometheus_user | prometheus  | Any User | Prometheus Service User, Owner of Node Specific Rules |
@@ -109,17 +109,30 @@ Here is an example for the main playbook
 
 ```yaml
 ---
+- name: Gather Facts of Agent Nodes
+  hosts: agents
+  gather_facts: true
+  tasks: []
+
 - hosts: alertmanager
   roles:
-    -  alertmanager
-```
+    - role: alertmanager
+      
+
 Here We are using root as an user but you can use different user, For that you just have to make become value true. Something like this:-
 ```yaml
 ---
+---
+- name: Gather Facts of Agent Nodes
+  hosts: agents
+  gather_facts: true
+  tasks: []
+
 - hosts: alertmanager
-  become: true
   roles:
-    -  alertmanager
+    - role: alertmanager
+      become: yes
+
 ```
 
 For inventory you can create a host file in which you can define your server ip, For example:-
@@ -130,8 +143,12 @@ For inventory you can create a host file in which you can define your server ip,
 
 [prometheus]
 10.1.1.100
+
+[agents]
+10.1.1.100
+10.1.1.101
 ```
-Note: Please Add Prometheus Server Also, Add Configuration of Alert Manager in prometheus.yml file
+Note: Please Add Prometheus Server IP's as well as Exporters agents servers IP's. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
 
 You can simply use this role by using this command
 ```shell
@@ -150,6 +167,8 @@ osm_alertmanager
 │   ├── email.tmpl
 │   ├── google_chat_calert.tmpl
 │   ├── node_exporter.rules
+│   ├── mysql_exporter.rules
+│   ├── telegraf_kafka.rules
 │   └── telegraf_node.rules
 ├── handlers
 │   └── main.yml
