@@ -22,5 +22,5 @@ galaxy_info:
     - devops
     - devsecops
 dependencies:
-  - opstree_devops.prometheus
+ # - opstree_devops.prometheus
 ...

@@ -109,10 +109,6 @@ Here is an example for the main playbook
 
 ```yaml
 ---
-- name: Gather Facts of Agent Nodes
-  hosts: agents
-  gather_facts: true
-  tasks: []
 
 - hosts: alertmanager
   roles:
@@ -123,10 +119,6 @@ Here We are using root as an user but you can use different user, For that you j
 
 ```yaml
 ---
-- name: Gather Facts of Agent Nodes
-  hosts: agents
-  gather_facts: true
-  tasks: []
 
 - hosts: alertmanager
   roles:
@@ -135,7 +127,7 @@ Here We are using root as an user but you can use different user, For that you j
 
 ```
 
-For inventory you can create a host file in which you can define your server ip, For example:-
+For inventory you can create a host file in which you can define your server ip, you have to define empty block of [agents] hostvars, For example:-
 
 ```
 [alertmanager]
@@ -145,10 +137,9 @@ For inventory you can create a host file in which you can define your server ip,
 10.1.1.100
 
 [agents]
-10.1.1.100
-10.1.1.101
+
 ```
-Note: Please Add Prometheus Server IP's as well as Exporters agents servers IP's. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
+Note: Please Add Prometheus Server IP's as well. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
 
 You can simply use this role by using this command
 ```shell
