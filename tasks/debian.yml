@@ -72,7 +72,7 @@
     - daemon_reload
     - restart_alertmanager_service
   when:
-    ansible_distribution_major_version > 14
+    ansible_distribution_major_version > "14"
 
 - name: Copy init script of Alertmanager
   copy:
