@@ -185,6 +185,7 @@ osm_alertmanager
 │   ├── alertmanager.init
 │   ├── email.tmpl
 |   ├── sns.tmpl
+|   ├── slack.tmpl
 │   ├── google_chat_calert.tmpl
 │   ├── node_exporter.rules
 │   ├── mysql_exporter.rules
