@@ -114,6 +114,8 @@ You can define any prometheus version as well as alertmanager version that you w
 |calert_url | "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz" | Calert service Download Link | Github url to Donwload Calert Binary |
 |google_chat_room | "google-room-name" | Any Google Chat Room | Google Chat Room use to send Alerts |
 |room_webhook| "google-chat-room-webhook" | Any Google Chat Room's Webhook | Google Chat Room's Webhook use to integrate with Calert Service |
+| rules_file | "node_exporter.rules" | By default file for rules | Rules file for set alerts |
+| templates | "email.tmpl" | By default template | Template file for alerts format |
 | PagerDuty_integration | "no" | "yes"/"no" | Enable/Disable PagerDuty integration with Alertmanager |
 | PagerDuty_channel_name | "call-alerting-channel" | Any PagerDuty Channel Name | PagerDuty Channel Name use to send Alerts |
 | pagerduty_url | "https://events.pagerduty.com/v2/enqueue" | specified url of pagerduty | url of PagerDuty |
@@ -172,6 +174,18 @@ Note: Please Add Prometheus Server IP's as well. Also, Configuration of Alert Ma
 You can simply use this role by using this command
 ```shell
 ansible-playbook -i hosts site.yml
+```
+You can add multiple rules and template files in one go by pass extra variables or extra variable json file, for example :-
+
+#### By Pass Extra Variables
+
+```shell
+ansible-playbook -i hosts site.yml --extra-vars='{"rules_file": ["rule_file1","rule_file2"], "templates": ["file1.tmpl", "file2.tmpl"]}'
+```
+#### By Pass Extra Variables file
+
+```shell
+ansible-playbook -i hosts site.yml  --extra-vars "@extra_vars.json"
 ```
 
 Directory Structure of Role
