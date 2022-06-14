@@ -169,7 +169,7 @@ if dependency role skipped then :-
 10.1.1.100
 
 ```
-Note: Please Add Prometheus Server IP's as well. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
+*Note**: Please Add Prometheus Server IP's as well. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
 
 You can simply use this role by using this command
 ```shell
@@ -187,7 +187,7 @@ ansible-playbook -i hosts site.yml --extra-vars='{"rules_file": ["rule_file1","r
 ```shell
 ansible-playbook -i hosts site.yml  --extra-vars "@extra_vars.json"
 ```
-Note: You have to move your custom templates or rules files into this **osm_alertmanager/files** folder first.
+**Note**: You have to move your custom templates or rules files into this **osm_alertmanager/files** folder first.
 
 Directory Structure of Role
 ---------------------------
