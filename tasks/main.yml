@@ -15,4 +15,5 @@
 - name: Install Calert
   include_tasks: calert.yml
   when: google_chat_integration == "yes"
+ 
 ...

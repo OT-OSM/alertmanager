@@ -5,4 +5,8 @@ base_url: "https://github.com/prometheus/alertmanager/releases/download"
 alertmanager_dir: "alertmanager-{{ alert_version }}.linux-amd64"
 download_url: "{{ base_url }}/v{{ alert_version }}/{{ alertmanager_dir }}.tar.gz"
 binary_path: "/usr/local/bin"
-rules_file: node_exporter.rules
+rules_file:
+    - "node_exporter.rules"
+
+templates:
+    - "email.tmpl"

@@ -3,12 +3,23 @@ global:
 templates:
 - '/etc/alertmanager/*.tmpl'
 
+{% if PagerDuty_integration == 'yes' -%}
+    resolve_timeout: 1m
+    pagerduty_url: '{{ pagerduty_url }}'
+{% endif -%}
+
 # The root route on which each incoming alert enters.
 route:
   {% if google_chat_integration == 'yes' and slack_integration == 'yes' and email_integration == 'yes' -%}
     {% set defaultlertReciver = "google_slack_email" -%}
   {% elif google_chat_integration == 'yes' and slack_integration == 'yes' -%}
     {% set defaultlertReciver = "google_chat_slack" -%}
+  {% elif PagerDuty_integration == 'yes' and slack_integration == 'yes' -%}
+    {% set defaultlertReciver = "PagerDuty_slack" -%}
+  {% elif PagerDuty_integration == 'yes' -%}
+    {% set defaultlertReciver = PagerDuty_channel_name -%}
+  {% elif sns_integration == 'yes' -%}
+    {% set defaultlertReciver = sns_channel_name -%}
   {% elif slack_integration == "yes" -%}
     {% set defaultlertReciver = slack_channel_name -%}
   {% elif google_chat_integration == 'yes' %}
@@ -46,6 +57,51 @@ receivers:
   webhook_configs:
   - url: 'http://localhost:6000/create?room_name={{ google_chat_room }}'
     send_resolved: true
+{% elif PagerDuty_integration == 'yes' and slack_integration == 'yes' -%}
+- name: '{{ slack_channel_name }}'
+  slack_configs:
+  - channel: '{{ slack_channel_name }}'
+    api_url: "{{ slack_webhook }}"
+    send_resolved: true
+- name: '{{ PagerDuty_channel_name }}'
+    pagerduty_configs:
+    - service_key: $INTEGRATION_KEY
+      send_resolved: trueglobal:
+    resolve_timeout: 1m
+    pagerduty_url: '{{ pagerduty_url }}'
+route:
+    receiver: 'pagerduty-notifications'
+receivers:
+- name: 'pagerduty-notifications'
+    pagerduty_configs:
+    - service_key: $INTEGRATION_KEY
+      send_resolved: true
+{% elif PagerDuty_integration == 'yes' -%}
+- name: '{{ PagerDuty_channel_name }}'
+    pagerduty_configs:
+    - service_key: $INTEGRATION_KEY
+      send_resolved: trueglobal:
+    resolve_timeout: 1m
+    pagerduty_url: '{{ pagerduty_url }}'
+route:
+    receiver: 'pagerduty-notifications'
+receivers:
+- name: 'pagerduty-notifications'
+    pagerduty_configs:
+    - service_key: $INTEGRATION_KEY
+      send_resolved: true
+{% elif sns_integration == 'yes' -%}
+- name: '{{ sns_channel_name }}'
+  sns_configs:
+    - topic_arn: xxxxx
+      sigv4:
+          region: '{{ region }}'
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']
 {% elif slack_integration == 'yes' -%}
 - name: '{{ slack_channel_name }}'
   slack_configs:

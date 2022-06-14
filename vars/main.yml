@@ -24,3 +24,13 @@ calert_base_url: "https://github.com/mr-karan/calert/releases/download"
 calert_url: "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
 google_chat_room: "google-room-name"
 room_webhook: "google-chat-room-webhook"
+
+# PagerDuty Integration
+PagerDuty_integration: "no"
+PagerDuty_channel_name: "call-alerting-channel"
+pagerduty_url: "https://events.pagerduty.com/v2/enqueue"
+
+# SNS Integration
+sns_integration: "no"
+sns_channel_name: "sns"
+region: "us-east-1"

@@ -6,7 +6,8 @@ User=root
 ExecStart={{ binary_path }}/alertmanager \
           --config.file=/etc/alertmanager/alertmanager.yml \
           --storage.path=/var/lib/alertmanager \
-          --cluster.listen-address=localhost:9094
+          --cluster.listen-address=localhost:9094 \
+          --cluster.advertise-address=0.0.0.0:9093
 
 Restart=on-failure
 
