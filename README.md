@@ -252,7 +252,10 @@ References
 
 Author Information
 ------------------
-This role is written and maintained by [Abhishek Dubey](https://gitlab.com/abhishek-dubey). If you have any queries and sugesstion, please feel free to reach.
+This role is written and maintained by [Abhishek Dubey] (https://gitlab.com/abhishek-dubey). If you have any queries and sugesstion, please feel free to reach out below ids.
 
-Email ID:- [abhishek.dubey@opstree.com]()
-Email ID:- [ishaan.ambashta@opstree.com]()
+|**Email ID**| **Name**|
+|----------------------|-----------------|
+| [abhishek.dubey@opstree.com]() | Abhishek Dubey |
+| [ishaan.ambashta@opstree.com]() | Ishaan Ambashta |
+
