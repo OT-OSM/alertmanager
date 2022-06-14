@@ -177,16 +177,17 @@ ansible-playbook -i hosts site.yml
 ```
 You can add multiple rules and template files in one go by pass extra variables or extra variable json file, for example :-
 
-#### By Pass Extra Variables
+#### By Passing Extra Variables
 
 ```shell
 ansible-playbook -i hosts site.yml --extra-vars='{"rules_file": ["rule_file1","rule_file2"], "templates": ["file1.tmpl", "file2.tmpl"]}'
 ```
-#### By Pass Extra Variables file
+#### By Passing Extra Variables file
 
 ```shell
 ansible-playbook -i hosts site.yml  --extra-vars "@extra_vars.json"
 ```
+Note: You have to move your custom templates or rules files into this osm_alertmanager/files folder first.
 
 Directory Structure of Role
 ---------------------------
