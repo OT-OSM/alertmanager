@@ -187,7 +187,7 @@ ansible-playbook -i hosts site.yml --extra-vars='{"rules_file": ["rule_file1","r
 ```shell
 ansible-playbook -i hosts site.yml  --extra-vars "@extra_vars.json"
 ```
-Note: You have to move your custom templates or rules files into this osm_alertmanager/files folder first.
+Note: You have to move your custom templates or rules files into this **osm_alertmanager/files** folder first.
 
 Directory Structure of Role
 ---------------------------
