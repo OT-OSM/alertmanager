@@ -143,6 +143,8 @@ Here We are using root as an user but you can use different user, For that you j
       become: yes
 ```
 
+## Example Inventory
+
 For inventory you can create a host file in which you can define your server ip, For example:- --
 
 ```ini
