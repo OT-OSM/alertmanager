@@ -129,22 +129,18 @@ Here is an example for the main playbook
 
 ```yaml
 ---
-
 - hosts: alertmanager
   roles:
     - role: alertmanager
-      
 ```
 Here We are using root as an user but you can use different user, For that you just have to make become value true. Something like this:-
 
 ```yaml
 ---
-
 - hosts: alertmanager
   roles:
     - role: alertmanager
       become: yes
-
 ```
 
 For inventory you can create a host file in which you can define your server ip, For example:- --
@@ -153,10 +149,8 @@ For inventory you can create a host file in which you can define your server ip,
 [alertmanager]
 10.1.1.100  ansible_user=ubuntu ansible_ssh_private_key_file=server1.pem
 
-
 [prometheus]
 10.1.1.100  ansible_user=ubuntu ansible_ssh_private_key_file=server1.pem
-
 ```
 **Note**: Please Add Prometheus Server IP's as well. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
 
