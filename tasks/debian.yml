@@ -66,8 +66,6 @@
   
   with_items: "{{ templates }}"
 
-##----
-
 - name: Copy Service for Alertmanager
   template:
     src: alertmanager.service.j2

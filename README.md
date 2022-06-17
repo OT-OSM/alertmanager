@@ -18,8 +18,8 @@ Supported OS
 ------------
   * CentOS:7
   * CentOS:6
-  * Ubuntu:xenial
-  * Ubuntu:trusty
+  * Ubuntu:bionic
+  * Ubuntu:focal
 
 Dependencies
 ------------
@@ -147,26 +147,15 @@ Here We are using root as an user but you can use different user, For that you j
 
 ```
 
-For inventory you can create a host file in which you can define your server ip, you have to define empty block of [agents] hostvars if dependency role runs, For example:-
+For inventory you can create a host file in which you can define your server ip, For example:- --
 
-```
+```ini
 [alertmanager]
-10.1.1.100
+10.1.1.100  ansible_user=ubuntu ansible_ssh_private_key_file=server1.pem
+
 
 [prometheus]
-10.1.1.100
-
-[agents]
-
-```
-if dependency role skipped then :-
-
-```
-[alertmanager]
-10.1.1.100
-
-[prometheus]
-10.1.1.100
+10.1.1.100  ansible_user=ubuntu ansible_ssh_private_key_file=server1.pem
 
 ```
 **Note**: Please Add Prometheus Server IP's as well. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
@@ -200,7 +189,7 @@ osm_alertmanager
 │   ├── alertmanager.init
 │   ├── email.tmpl
 |   ├── sns.tmpl
-|   ├── slack.tmpl
+|   ├── slack_notification.tmpl
 │   ├── google_chat_calert.tmpl
 │   ├── node_exporter.rules
 │   ├── mysql_exporter.rules
@@ -222,38 +211,6 @@ osm_alertmanager
     ├── calert.service.j2
     └── calert.toml.j2
 ```
-
-Role Variables
---------------
-
-|**Variable**| **Default Value**| **Description**|
-|---------|------------|-----------|
-|alertmanager_version| "0.15.1"| The version of alertmanager version, this variable you have to give because it will download alertmanager from github releases|
-|sender_email| "send.test@example.com"| The email id you want to send alerts||
-|alertmanager_email| "alertmanager.test@example.com" | The email id from which you want to send mail to recievers|
-|smtp_server | "smtp.gmail.com:587" | smtp server host name|
-
-Inventory
-----------
-An inventory should look like this:-
-```ini
-[alertmanager]                 
-192.168.1.198    ansible_user=ubuntu   
-192.168.3.201    ansible_user=opstree 
-```
-
-Example Playbook
-----------------
-* Here is an example playbook:-
-```yaml
----
-- hosts: alertmanager
-  become: true
-  roles:
-    -  alertmanager
-```
-* ansible-playbook -i inventory alrtmanager.yml
-
 **After successful installation of alertmanager, you can browse through the alertmanager url and see the web interface**
 ![web](./media/alertmanager_ui.png)
 
@@ -267,10 +224,9 @@ References
 
 Author Information
 ------------------
-This role is written and maintained by [Abhishek Dubey] (https://gitlab.com/abhishek-dubey). If you have any queries and sugesstion, please feel free to reach out below ids.
+This role is written and maintained by [Abhishek Dubey] (https://gitlab.com/abhishek-dubey). If you have any queries and sugesstion, please feel free to reach out below id's.
 
-|**Email ID**| **Name**|
-|----------------------|-----------------|
-| [abhishek.dubey@opstree.com]() | Abhishek Dubey |
-| [ishaan.ambashta@opstree.com]() | Ishaan Ambashta |
+
+[Abhishek Dubey](abhishek.dubey@opstree.com)  
+[Ishaan Ambashta](ishaan.ambashta@opstree.com) 
 
