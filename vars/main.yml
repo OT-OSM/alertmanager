@@ -1,6 +1,6 @@
 ---
 # vars file for alertmanager
-version: "0.20.0"
+alert_version: "0.20.0"
 alertmanager_user: "alertmanager"
 alertmanager_group: "alertmanager"
 prometheus_user: "prometheus"
@@ -18,9 +18,19 @@ slack_webhook: "https://hooks.slack.com/services/T00000000/B00/XXXXXX"
 slack_channel_name: "alerting-channel"
 
 # Google Chat Integration
-google_chat_integration: "yes"
+google_chat_integration: "no"
 calert_home: "/opt/calert"
 calert_base_url: "https://github.com/mr-karan/calert/releases/download"
 calert_url: "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
 google_chat_room: "google-room-name"
 room_webhook: "google-chat-room-webhook"
+
+# PagerDuty Integration
+PagerDuty_integration: "no"
+PagerDuty_channel_name: "call-alerting-channel"
+pagerduty_url: "https://events.pagerduty.com/v2/enqueue"
+
+# SNS Integration
+sns_integration: "no"
+sns_channel_name: "sns"
+region: "us-east-1"

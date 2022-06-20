@@ -56,13 +56,15 @@
     mode: 0750
   tags: test
 
-- name: Adding Email Template for Alertmanager
+- name: Adding Templates for Alertmanager
   copy:
-    src: email.tmpl
-    dest: /etc/alertmanager/email.tmpl
+    src: "{{ item }}"
+    dest: "/etc/alertmanager/"
     owner: "{{ alertmanager_user }}"
     group: "{{ alertmanager_user }}"
     mode: 0750
+  
+  with_items: "{{ templates }}"
 
 - name: Copy Service for Alertmanager
   template:
@@ -72,7 +74,7 @@
     - daemon_reload
     - restart_alertmanager_service
   when:
-    ansible_distribution_major_version == "18" or ansible_distribution_major_version == "16"
+    ansible_distribution_major_version > "14"
 
 - name: Copy init script of Alertmanager
   copy:
@@ -90,7 +92,7 @@
       - network
   register: private_ip
 
-- name: Geting Private IP
+- name: Getting Private IP
   debug:
     msg: "{{ private_ip.ansible_facts.ansible_all_ipv4_addresses|join(',') }}"
 
@@ -107,12 +109,15 @@
   delegate_to: "{{ item }}"
   loop: "{{ groups['prometheus'] }}"
 
-- name: Adding Alert Rules to Prometheus for telegraf
+- name: Adding Alert Rules to Prometheus
   copy:
-    src: telegraf_node.rules
-    dest: /etc/prometheus/telegraf_node.rules
+    src: "{{ item }}"
+    dest: "/etc/prometheus/"
     owner: "{{ prometheus_user }}"
     group: "{{ prometheus_group }}"
-  delegate_to: "{{ item }}"
-  loop: "{{ groups['prometheus'] }}"
+
+  with_items: "{{ rules_file }}"
+
+  when: groups['prometheus']
+  
 ...

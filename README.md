@@ -12,11 +12,24 @@ Version History
 |----------|---------|---------------|-----------------|
 |**May  2020** | v0.0.1 | Initial Draft | [Abhishek Dubey](abhishek.dubey@opstree.com) |
 |**July 2020** | v0.1.0 | Added Integration of Slack, Google chat| [Mahesh Kumar](mahesh.kumar@opstree.com) |
+|**June  2022** | v0.1.1 | Added support for cluster, custom alertmanager rules, templates, Integration of AWS SNS, PagerDuty | [Ishaan Ambashta](ishaan.ambashta@opstree.com) |
+
+Supported OS
+------------
+  * CentOS:7
+  * CentOS:6
+  * Ubuntu:bionic
+  * Ubuntu:focal
+
+Dependencies
+------------
+- prometheus-server
+- libselinux-python
 
 
 ## Requirements
 
-There is no particular requirment for running this role. As this role is platform independent for centos 6 or 7 and ubuntu 14 or 16. The only dependency for centos 6 is libselinux-python and we have included that as well.
+There is no particular requirment for running this role. As this role is platform independent for centos 6 or above and ubuntu 18 or above. The only dependency for centos 6 is libselinux-python and we have included that as well.
 The basic requirments are:-
 - Centos/Ubuntu Server
 - Python should be installed on the target server
@@ -27,7 +40,7 @@ The basic requirments are:-
 ```yaml
 ---
 # defaults file for alertmanager
-version: "0.20.0"
+alert_version: "0.20.0"
 base_url: "https://github.com/prometheus/alertmanager/releases/download"
 alertmanager_dir: "alertmanager-{{ version }}.linux-amd64"
 download_url: "{{ base_url }}/v{{ version }}/{{ alertmanager_dir }}.tar.gz"
@@ -49,21 +62,32 @@ slack_webhook: "https://hooks.slack.com/services/T00000000/B00/XXXXXX"
 slack_channel_name: "alerting-channel"
 
 # Google Chat Integration
-google_chat_integration: "yes"
+google_chat_integration: "no"
 calert_home: "/opt/calert"
 calert_base_url: "https://github.com/mr-karan/calert/releases/download"
 calert_url: "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
 google_chat_room: "google-room-name"
 room_webhook: "google-chat-room-webhook"
+
+# PagerDuty Integration
+PagerDuty_integration: "no"
+PagerDuty_channel_name: "call-alerting-channel"
+pagerduty_url: "https://events.pagerduty.com/v2/enqueue"
+
+# SNS Integration
+sns_integration: "no"
+sns_channel_name: "sns"
+region: "us-east-1"
+
 ```
 
-You can define any prometheus version that you want to install on your server.
+You can define any prometheus version as well as alertmanager version that you want to install on your server.
 
 #### Mandatory Variables
 
 |**Variable**|**Default Value**|**Possible Values**|**Description**|
 |------------|-----------------|-------------------|---------------|
-|version | "0.20.0" | Any Version | Alertmanager will be downloaded from github releases, so you have to define version |
+|alert_version | "0.20.0" | Any Version | Alertmanager will be downloaded from github releases, so you have to define version |
 |alertmanager_user | alertmanager | Any User | Alertmanager Service User|
 |alertmanager_group | alertmanager | Any Group | Alertmanger Service Group |
 |prometheus_user | prometheus  | Any User | Prometheus Service User, Owner of Node Specific Rules |
@@ -90,18 +114,14 @@ You can define any prometheus version that you want to install on your server.
 |calert_url | "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz" | Calert service Download Link | Github url to Donwload Calert Binary |
 |google_chat_room | "google-room-name" | Any Google Chat Room | Google Chat Room use to send Alerts |
 |room_webhook| "google-chat-room-webhook" | Any Google Chat Room's Webhook | Google Chat Room's Webhook use to integrate with Calert Service |
-
-Supported OS
-------------
-  * CentOS:7
-  * CentOS:6
-  * Ubuntu:xenial
-  * Ubuntu:trusty
-
-Dependencies
-------------
-- prometheus-server
-- libselinux-python
+| rules_file | "node_exporter.rules" | By default file for rules | Rules file for set alerts |
+| templates | "email.tmpl" | By default template | Template file for alerts format |
+| PagerDuty_integration | "no" | "yes"/"no" | Enable/Disable PagerDuty integration with Alertmanager |
+| PagerDuty_channel_name | "call-alerting-channel" | Any PagerDuty Channel Name | PagerDuty Channel Name use to send Alerts |
+| pagerduty_url | "https://events.pagerduty.com/v2/enqueue" | specified url of pagerduty | url of PagerDuty |
+| sns_integration | "no" | "yes"/"no" | Enable/Disable sns integration with Alertmanager |
+| sns_channel_name | "sns" | Any AWS SNS Channel Name | SNS Channel Name use to send Alerts to AWS SNS |
+| region | "us-east-1" | any region for sns | region to which send alerts | 
 
 ## Example Playbook
 
@@ -111,31 +131,58 @@ Here is an example for the main playbook
 ---
 - hosts: alertmanager
   roles:
-    -  alertmanager
+    - role: alertmanager
 ```
 Here We are using root as an user but you can use different user, For that you just have to make become value true. Something like this:-
+
 ```yaml
 ---
 - hosts: alertmanager
-  become: true
   roles:
-    -  alertmanager
+    - role: alertmanager
+      become: yes
 ```
 
-For inventory you can create a host file in which you can define your server ip, For example:-
+## Example Inventory
 
-```
+For inventory you can create a host file in which you can define your server ip, For example:- --
+
+```ini
 [alertmanager]
-10.1.1.100
+10.1.1.100  ansible_user=ubuntu ansible_ssh_private_key_file=server1.pem
 
 [prometheus]
-10.1.1.100
+10.1.1.100  ansible_user=ubuntu ansible_ssh_private_key_file=server1.pem
 ```
-Note: Please Add Prometheus Server Also, Add Configuration of Alert Manager in prometheus.yml file
+**Note**: Please Add Prometheus Server IP's as well. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
 
 You can simply use this role by using this command
 ```shell
 ansible-playbook -i hosts site.yml
+```
+You can add multiple rules and template files in one go by pass extra variables or extra variable json file, for example :-
+
+#### By Passing Extra Variables
+
+```shell
+ansible-playbook -i hosts site.yml --extra-vars='{"rules_file": ["rule_file1","rule_file2"], "templates": ["file1.tmpl", "file2.tmpl"]}'
+```
+#### By Passing Extra Variables file
+
+```shell
+ansible-playbook -i hosts site.yml  --extra-vars "@extra_vars.json"
+```
+**Note**: 
+1. You have to move your custom templates or rules files into this **osm_alertmanager/files** folder first.
+
+2. Extra variable file should be in json format, for example:-
+
+**Extra variables file - extra_vars.json**
+```json
+{
+    "rules_file": "rule_file1", 
+    "templates": "file2.tmpl"
+}
 ```
 
 Directory Structure of Role
@@ -148,8 +195,12 @@ osm_alertmanager
 ├── files
 │   ├── alertmanager.init
 │   ├── email.tmpl
+|   ├── sns.tmpl
+|   ├── slack_notification.tmpl
 │   ├── google_chat_calert.tmpl
 │   ├── node_exporter.rules
+│   ├── mysql_exporter.rules
+│   ├── telegraf_kafka.rules
 │   └── telegraf_node.rules
 ├── handlers
 │   └── main.yml
@@ -167,38 +218,6 @@ osm_alertmanager
     ├── calert.service.j2
     └── calert.toml.j2
 ```
-
-Role Variables
---------------
-
-|**Variable**| **Default Value**| **Description**|
-|---------|------------|-----------|
-|alertmanager_version| "0.15.1"| The version of alertmanager version, this variable you have to give because it will download alertmanager from github releases|
-|sender_email| "send.test@example.com"| The email id you want to send alerts||
-|alertmanager_email| "alertmanager.test@example.com" | The email id from which you want to send mail to recievers|
-|smtp_server | "smtp.gmail.com:587" | smtp server host name|
-
-Inventory
-----------
-An inventory should look like this:-
-```ini
-[alertmanager]                 
-192.168.1.198    ansible_user=ubuntu   
-192.168.3.201    ansible_user=opstree 
-```
-
-Example Playbook
-----------------
-* Here is an example playbook:-
-```yaml
----
-- hosts: alertmanager
-  become: true
-  roles:
-    -  alertmanager
-```
-* ansible-playbook -i inventory alrtmanager.yml
-
 **After successful installation of alertmanager, you can browse through the alertmanager url and see the web interface**
 ![web](./media/alertmanager_ui.png)
 
@@ -212,6 +231,9 @@ References
 
 Author Information
 ------------------
-This role is written and maintained by [Abhishek Dubey](https://gitlab.com/abhishek-dubey). If you have any queries and sugesstion, please feel free to reach.
+This role is written and maintained by [Abhishek Dubey] (https://gitlab.com/abhishek-dubey). If you have any queries and sugesstion, please feel free to reach out below id's.
 
-Email ID:- [abhishek.dubey@opstree.com]()
+
+[Abhishek Dubey](abhishek.dubey@opstree.com)  
+[Ishaan Ambashta](ishaan.ambashta@opstree.com) 
+
