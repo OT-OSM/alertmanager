@@ -63,7 +63,6 @@
     owner: "{{ alertmanager_user }}"
     group: "{{ alertmanager_user }}"
     mode: 0750
-  
   with_items: "{{ templates }}"
 
 - name: Copy Service for Alertmanager
@@ -119,5 +118,4 @@
   with_items: "{{ rules_file }}"
 
   when: groups['prometheus']
-  
 ...
