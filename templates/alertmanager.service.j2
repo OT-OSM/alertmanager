@@ -1,15 +1,14 @@
 [Unit]
-Description=Alertmanager Service
+Description=Alertmanager
+After=network.target
 
 [Service]
-User=root
-ExecStart={{ binary_path }}/alertmanager \
-          --config.file=/etc/alertmanager/alertmanager.yml \
-          --storage.path=/var/lib/alertmanager \
-          --cluster.listen-address=localhost:9094 \
-          --cluster.advertise-address=0.0.0.0:9093
-
-Restart=on-failure
+Type=simple
+User=alertmanager
+Group=alertmanager
+ExecStart=/usr/local/bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/var/lib/alertmanager
+Restart=always
+MemoryLimit=256M
 
 [Install]
 WantedBy=multi-user.target
