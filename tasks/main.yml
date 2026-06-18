@@ -1,66 +1,9 @@
 ---
-- name: Create alertmanager group
-  group:
-    name: alertmanager
-    state: present
+- name: Include installation tasks
+  ansible.builtin.import_tasks: install.yml
 
-- name: Create alertmanager user
-  user:
-    name: alertmanager
-    group: alertmanager
-    system: yes
-    shell: /usr/sbin/nologin
+- name: Include configuration tasks
+  ansible.builtin.import_tasks: config.yml
 
-- name: Create directories
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: alertmanager
-    group: alertmanager
-  loop:
-    - /etc/alertmanager
-    - /var/lib/alertmanager
-
-- name: Download Alertmanager
-  get_url:
-    url: "https://github.com/prometheus/alertmanager/releases/download/v0.27.0/alertmanager-0.27.0.linux-amd64.tar.gz"
-    dest: "/tmp/alertmanager.tar.gz"
-
-
-- name: Create temporary extraction folder
-  file:
-    path: /tmp/alertmanager_extract
-    state: directory
-    mode: '0755'
-
-- name: Extract Alertmanager
-  unarchive:
-    src: "/tmp/alertmanager.tar.gz"
-    dest: "/tmp/alertmanager_extract"
-    remote_src: yes
-
-- name: Move binary
-  copy:
-    src: "/tmp/alertmanager_extract/alertmanager-0.27.0.linux-amd64/alertmanager"
-    dest: "/usr/local/bin/alertmanager"
-    mode: '0755'
-    remote_src: yes
-
-- name: Deploy Config
-  template:
-    src: alertmanager.yml.j2
-    dest: /etc/alertmanager/alertmanager.yml
-  notify: Restart Alertmanager
-
-- name: Setup Service
-  template:
-    src: alertmanager.service.j2
-    dest: /etc/systemd/system/alertmanager.service
-  notify: Restart Alertmanager
-
-- name: Start Alertmanager
-  systemd:
-    name: alertmanager
-    state: started
-    enabled: yes
-    daemon_reload: yes
+- name: Include service tasks
+  ansible.builtin.import_tasks: service.yml
