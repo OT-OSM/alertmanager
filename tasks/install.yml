@@ -1,0 +1,48 @@
+---
+- name: Create alertmanager group
+  ansible.builtin.group:
+    name: "{{ alertmanager_group }}"
+    state: present
+
+- name: Create alertmanager user
+  ansible.builtin.user:
+    name: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    system: true
+    shell: /usr/sbin/nologin
+
+- name: Create Alertmanager directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    mode: "0755"
+  loop:
+    - "{{ alertmanager_config_dir }}"
+    - "{{ alertmanager_data_dir }}"
+
+- name: Download Alertmanager archive
+  ansible.builtin.get_url:
+    url: "{{ alertmanager_download_url }}"
+    dest: "{{ alertmanager_archive_path }}"
+    mode: "0644"
+
+- name: Create extraction directory
+  ansible.builtin.file:
+    path: "{{ alertmanager_extract_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Extract Alertmanager archive
+  ansible.builtin.unarchive:
+    src: "{{ alertmanager_archive_path }}"
+    dest: "{{ alertmanager_extract_dir }}"
+    remote_src: true
+
+- name: Install Alertmanager binary
+  ansible.builtin.copy:
+    src: "{{ alertmanager_extract_dir }}/alertmanager-{{ alertmanager_version }}.{{ alertmanager_arch }}/alertmanager"
+    dest: "{{ alertmanager_install_dir }}/alertmanager"
+    mode: "0755"
+    remote_src: true
