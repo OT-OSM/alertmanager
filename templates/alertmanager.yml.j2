@@ -1,14 +1,14 @@
 global:
-  resolve_timeout: 5m
+  resolve_timeout: {{ alertmanager_resolve_timeout }}
 
 route:
   group_by: ['alertname']
-  group_wait: 10s
-  group_interval: 10s
-  repeat_interval: 1h
+  group_wait: {{ alertmanager_group_wait }}
+  group_interval: {{ alertmanager_group_interval }}
+  repeat_interval: {{ alertmanager_repeat_interval }}
   receiver: 'web.hook'
 
 receivers:
-- name: 'web.hook'
-  webhook_configs:
-  - url: 'http://127.0.0.1:5001/'
+  - name: 'web.hook'
+    webhook_configs:
+      - url: '{{ alertmanager_webhook_url }}'
