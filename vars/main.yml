@@ -1,0 +1,7 @@
+---
+alertmanager_download_url: >-
+  https://github.com/prometheus/alertmanager/releases/download/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.{{ alertmanager_arch }}.tar.gz
+
+alertmanager_extract_dir: "/tmp/alertmanager_extract"
+
+alertmanager_archive_path: "/tmp/alertmanager.tar.gz" 
