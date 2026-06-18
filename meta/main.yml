@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  role_name: alertmanager
+  author: Shubham Rathi
+  description: Ansible role to install and configure Prometheus Alertmanager
+  company: MyGurukulam
+
+  license: Apache-2.0
+
+  min_ansible_version: "2.14"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+
+  galaxy_tags:
+    - monitoring
+    - prometheus
+    - alertmanager
+    - observability
+    - alerting
+
+dependencies: []
