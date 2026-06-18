@@ -1,18 +1,9 @@
 ---
-# tasks file for alertmanager
-- name: Checking Prerequisites
-  include_tasks: prerequisites.yml
+- name: Include installation tasks
+  ansible.builtin.import_tasks: install.yml
 
-- name: Install Alertmanager on Debian
-  include_tasks: debian.yml
-  when: ansible_os_family == "Debian"
-  tags: test
+- name: Include configuration tasks
+  ansible.builtin.import_tasks: config.yml
 
-- name: Install Alertmanager on RedHat
-  include_tasks: redhat.yml
-  when: ansible_os_family == "RedHat"
-
-- name: Install Calert
-  include_tasks: calert.yml
-  when: google_chat_integration == "yes"
-...
+- name: Include service tasks
+  ansible.builtin.import_tasks: service.yml

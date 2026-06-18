@@ -1,15 +1,18 @@
 [Unit]
-Description=Alertmanager Service
+Description=Prometheus Alertmanager
+After=network.target
 
 [Service]
-User=root
-ExecStart={{ binary_path }}/alertmanager \
-          --config.file=/etc/alertmanager/alertmanager.yml \
-          --storage.path=/var/lib/alertmanager \
-          --cluster.listen-address=localhost:9094 \
-          --cluster.advertise-address=0.0.0.0:9093
+Type=simple
+User={{ alertmanager_user }}
+Group={{ alertmanager_group }}
 
-Restart=on-failure
+ExecStart={{ alertmanager_install_dir }}/alertmanager \
+  --config.file={{ alertmanager_config_dir }}/alertmanager.yml \
+  --storage.path={{ alertmanager_data_dir }}
+
+Restart=always
+MemoryLimit={{ alertmanager_memory_limit }}
 
 [Install]
 WantedBy=multi-user.target

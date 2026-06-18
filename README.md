@@ -1,239 +1,298 @@
-Ansible Role: osm_alertmanager
-==============================
 
->Alertmanager is tool that handles alerts sent by Prometheus. It gets the alert from Prometheus server and make groups of alerts on the basis of labels and after that it will forward the alert to different reciever such as Email, PagerDuty, Slack.
+[![Apache License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/OT-OSM/tempo)
+[![Ansible](https://img.shields.io/badge/Ansible-Role-red.svg)](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)
+[![Platform](https://img.shields.io/badge/Platform-Ubuntu%2020.04%20%7C%2022.04-orange.svg)](https://ubuntu.com)
 
->Alertmanager is configured via using command-line flags and a configuration while. While command line configure system parameters, the configuration file contains the information like recievers and routing.
+[![Opstree Solutions][opstree_avatar]][opstree_homepage]<br/>[Opstree Solutions][opstree_homepage]
 
-Version History
----------------
+[opstree_homepage]: https://opstree.github.io/
+[opstree_avatar]: https://img.cloudposse.com/150x150/https://github.com/opstree.png
 
-|**Date**| **Version**| **Description**| **Changed By** |
-|----------|---------|---------------|-----------------|
-|**May  2020** | v0.0.1 | Initial Draft | [Abhishek Dubey](abhishek.dubey@opstree.com) |
-|**July 2020** | v0.1.0 | Added Integration of Slack, Google chat| [Mahesh Kumar](mahesh.kumar@opstree.com) |
-|**June  2022** | v0.1.1 | Added support for cluster, custom alertmanager rules, templates, Integration of AWS SNS, PagerDuty | [Ishaan Ambashta](ishaan.ambashta@opstree.com) |
+---
 
-Supported OS
-------------
-  * CentOS:7
-  * CentOS:6
-  * Ubuntu:bionic
-  * Ubuntu:focal
+# Alert-Manager — Ansible Role
 
-Dependencies
-------------
-- prometheus-server
-- libselinux-python
+A production-grade Ansible role to install, configure, and manage **Grafana Tempo** on Ubuntu systems. Tempo is an open-source, high-scale distributed tracing backend that ingests traces from instrumented applications via OTLP, Jaeger, Zipkin, or other protocols, and integrates natively with Grafana for trace visualization.
 
+## Key Features
+
+- [x] Installs Tempo from official Grafana GitHub releases
+- [x] Supports architecture-specific binary selection (e.g. `linux_amd64`, `linux_arm64`)
+- [x] Creates a dedicated system user and group for security isolation
+- [x] Configures Tempo via Jinja2 templates
+- [x] Manages service lifecycle using Ansible handlers
+- [x] Idempotent — safe to re-run without side effects
+- [x] All variables are role-namespaced to avoid conflicts
+
+---
 
 ## Requirements
 
-There is no particular requirment for running this role. As this role is platform independent for centos 6 or above and ubuntu 18 or above. The only dependency for centos 6 is libselinux-python and we have included that as well.
-The basic requirments are:-
-- Centos/Ubuntu Server
-- Python should be installed on the target server
-- 9093 port should be open in your server
+| Requirement | Details |
+|-------------|---------|
+| **OS** | Ubuntu `focal` (20.04) or `jammy` (22.04) |
+| **Privileges** | Root or sudo access on target hosts |
+| **Ansible Collection** | `community.general` |
 
-## Role Variables
+Install the required collection:
 
-```yaml
----
-# defaults file for alertmanager
-alert_version: "0.20.0"
-base_url: "https://github.com/prometheus/alertmanager/releases/download"
-alertmanager_dir: "alertmanager-{{ version }}.linux-amd64"
-download_url: "{{ base_url }}/v{{ version }}/{{ alertmanager_dir }}.tar.gz"
-alertmanager_user: "alertmanager"
-alertmanager_group: "alertmanager"
-prometheus_user: "prometheus"
-prometheus_group: "prometheus"
-binary_path: "/usr/local/bin"
-
-# Email Notification
-email_integration: "no"
-sender_email: "send.test@example.com"
-alertmanager_email: "alertmanager.test@example.com"
-smtp_server: "smtp.gmail.com:587"
-
-# Slack Integration
-slack_integration: "yes"
-slack_webhook: "https://hooks.slack.com/services/T00000000/B00/XXXXXX"
-slack_channel_name: "alerting-channel"
-
-# Google Chat Integration
-google_chat_integration: "no"
-calert_home: "/opt/calert"
-calert_base_url: "https://github.com/mr-karan/calert/releases/download"
-calert_url: "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz"
-google_chat_room: "google-room-name"
-room_webhook: "google-chat-room-webhook"
-
-# PagerDuty Integration
-PagerDuty_integration: "no"
-PagerDuty_channel_name: "call-alerting-channel"
-pagerduty_url: "https://events.pagerduty.com/v2/enqueue"
-
-# SNS Integration
-sns_integration: "no"
-sns_channel_name: "sns"
-region: "us-east-1"
-
-```
-
-You can define any prometheus version as well as alertmanager version that you want to install on your server.
-
-#### Mandatory Variables
-
-|**Variable**|**Default Value**|**Possible Values**|**Description**|
-|------------|-----------------|-------------------|---------------|
-|alert_version | "0.20.0" | Any Version | Alertmanager will be downloaded from github releases, so you have to define version |
-|alertmanager_user | alertmanager | Any User | Alertmanager Service User|
-|alertmanager_group | alertmanager | Any Group | Alertmanger Service Group |
-|prometheus_user | prometheus  | Any User | Prometheus Service User, Owner of Node Specific Rules |
-|prometheus_group | prometheus | Any Group | Prontheus Service Group, give permision to Node Specific Rules file|
-
-#### Optional Variables
-
-|**Variable**|**Default Value**|**Possible Values**|**Description**|
-|------------|-----------------|-------------------|---------------|
-|base_url | https://github.com/prometheus/alertmanager/releases/download | Base url  of Alertmanager's Download link | Alertmanger Download link Base URL |
-|alertmanager_dir | alertmanager-{{ version }}.linux-amd64 | Alertmanger Dir Name | Alertmanger Directory after Extracting |
-|download_url | {{ base_url }}/v{{ version }}/{{ alertmanager_dir }}.tar.gz | Alertmanger Download Link | Github url to Donwload Alertmanger Binary |
-|binary_path | /usr/local/bin | Any Path | Alertmanger Binary Path |
-|email_integration| "no" | "yes"/"no" | Enable/Disable Email integration with Alertmanager |
-|sender_email | "send.test@example.com" | Any Email Address | Email Address use to send alerts |
-|alertmanager_email | "alertmanager.test@example.com" | Any Email Address | Alertmanger's Email Address |
-|smtp_server | "smtp.gmail.com:587" | smtp_server address with port | Email smpt server use by Alertmanger |
-|slack_integration | "no" | "yes"/"no" | Enable/Disable Slack integration with Alertmanager |
-|slack_webhook | "https://hooks.slack.com/services/T00000000/B00/XXXXXX" | Any Channel Webhook | Slack Channel Webhook use to integrate Slack Channel with Alertmanger |
-|slack_channel_name | "alerting-channel" | Any Slack Channel Name | Slack Channel Name use to send Alerts |
-|google_chat_integration | "yes" | "yes"/"no" | Enable/Disable Google Chat integration with Alertmanager |
-|calert_home | "/opt/calert" | Calert Service home path | Calert Service home where calert service binary and configuration files will be |
-|calert_base_url| "https://github.com/mr-karan/calert/releases/download" | Calert service Download Link | Calert Binary's URL |
-|calert_url | "{{ calert_base_url }}/v1.2.1/calert_1.2.1_linux_amd64.tar.gz" | Calert service Download Link | Github url to Donwload Calert Binary |
-|google_chat_room | "google-room-name" | Any Google Chat Room | Google Chat Room use to send Alerts |
-|room_webhook| "google-chat-room-webhook" | Any Google Chat Room's Webhook | Google Chat Room's Webhook use to integrate with Calert Service |
-| rules_file | "node_exporter.rules" | By default file for rules | Rules file for set alerts |
-| templates | "email.tmpl" | By default template | Template file for alerts format |
-| PagerDuty_integration | "no" | "yes"/"no" | Enable/Disable PagerDuty integration with Alertmanager |
-| PagerDuty_channel_name | "call-alerting-channel" | Any PagerDuty Channel Name | PagerDuty Channel Name use to send Alerts |
-| pagerduty_url | "https://events.pagerduty.com/v2/enqueue" | specified url of pagerduty | url of PagerDuty |
-| sns_integration | "no" | "yes"/"no" | Enable/Disable sns integration with Alertmanager |
-| sns_channel_name | "sns" | Any AWS SNS Channel Name | SNS Channel Name use to send Alerts to AWS SNS |
-| region | "us-east-1" | any region for sns | region to which send alerts | 
-
-## Example Playbook
-
-Here is an example for the main playbook
-
-```yaml
----
-- hosts: alertmanager
-  roles:
-    - role: alertmanager
-```
-Here We are using root as an user but you can use different user, For that you just have to make become value true. Something like this:-
-
-```yaml
----
-- hosts: alertmanager
-  roles:
-    - role: alertmanager
-      become: yes
-```
-
-## Example Inventory
-
-For inventory you can create a host file in which you can define your server ip, For example:- --
-
-```ini
-[alertmanager]
-10.1.1.100  ansible_user=ubuntu ansible_ssh_private_key_file=server1.pem
-
-[prometheus]
-10.1.1.100  ansible_user=ubuntu ansible_ssh_private_key_file=server1.pem
-```
-**Note**: Please Add Prometheus Server IP's as well. Also, Configuration of Alert Manager will automatically add in prometheus.yml file
-
-You can simply use this role by using this command
-```shell
-ansible-playbook -i hosts site.yml
-```
-You can add multiple rules and template files in one go by pass extra variables or extra variable json file, for example :-
-
-#### By Passing Extra Variables
-
-```shell
-ansible-playbook -i hosts site.yml --extra-vars='{"rules_file": ["rule_file1","rule_file2"], "templates": ["file1.tmpl", "file2.tmpl"]}'
-```
-#### By Passing Extra Variables file
-
-```shell
-ansible-playbook -i hosts site.yml  --extra-vars "@extra_vars.json"
-```
-**Note**: 
-1. You have to move your custom templates or rules files into this **osm_alertmanager/files** folder first.
-
-2. Extra variable file should be in json format, for example:-
-
-**Extra variables file - extra_vars.json**
-```json
-{
-    "rules_file": "rule_file1", 
-    "templates": "file2.tmpl"
-}
-```
-
-Directory Structure of Role
----------------------------
-This is the directory structure of role:-
 ```bash
-osm_alertmanager
-├── defaults
-│   └── main.yml
-├── files
-│   ├── alertmanager.init
-│   ├── email.tmpl
-|   ├── sns.tmpl
-|   ├── slack_notification.tmpl
-│   ├── google_chat_calert.tmpl
-│   ├── node_exporter.rules
-│   ├── mysql_exporter.rules
-│   ├── telegraf_kafka.rules
-│   └── telegraf_node.rules
-├── handlers
-│   └── main.yml
-├── README.md
-├── site.yml
-├── tasks
-│   ├── calert.yml
-│   ├── debian.yml
-│   ├── main.yml
-│   ├── prerequisites.yml
-│   └── redhat.yml
-└── templates
-    ├── alertmanager.service.j2
-    ├── alertmanager.yml.j2
-    ├── calert.service.j2
-    └── calert.toml.j2
+ansible-galaxy collection install community.general
 ```
-**After successful installation of alertmanager, you can browse through the alertmanager url and see the web interface**
-![web](./media/alertmanager_ui.png)
 
-License
--------
-BSD
+> **Security Note:** Sensitive defaults are placeholders in `defaults/main.yml`.  
+> Always override secrets via **Semaphore environment variables** or **Ansible Vault** — never commit credentials to source control.
 
-References
-----------
-- **[software](https://prometheus.io/docs/alerting/alertmanager/)**
+---
 
-Author Information
-------------------
-This role is written and maintained by [Abhishek Dubey] (https://gitlab.com/abhishek-dubey). If you have any queries and sugesstion, please feel free to reach out below id's.
+## Role Structure
 
+```
+tempo/
+├── tasks/
+│   └── main.yml               # Main task entry point
+│   └── install.yml
+│   └── service.yml
+│   └── config.yml
+|   └── config.yml          
+├── handlers/
+│   └── main.yml
+├── vars/
+│   └── main.yml
+├── defaults/
+│   └── main.yml
+├── meta/
+│   └── main.yml                    # Service restart / reload handlers
+└── templates/
+    ├── tempo.yaml.j2             # Main Tempo configuration template
+    └── tempo.service.j2          # Jinja2 systemd unit template
+```
 
-[Abhishek Dubey](abhishek.dubey@opstree.com)  
-[Ishaan Ambashta](ishaan.ambashta@opstree.com) 
+---
 
+## File Descriptions
+
+### `tasks/main.yml`
+
+Orchestrates all installation and configuration steps:
+
+1. Create dedicated `tempo` system user and group
+2. Create data, WAL, and configuration directories with correct ownership
+3. Download the Tempo binary archive from Grafana GitHub releases for the target architecture
+4. Extract and install the binary to the system PATH
+5. Render and deploy the Tempo config and systemd unit from templates
+6. Enable and start the `tempo` service
+
+### `handlers/main.yml`
+
+Triggered automatically when configuration changes are detected:
+
+- **`restart tempo`** — restarts the Tempo service
+- **`reload systemd`** — reloads the systemd daemon after service file updates
+
+### `templates/tempo.yaml.j2`
+
+Jinja2 template that renders the main Tempo configuration installed to `/etc/tempo/tempo.yaml`. Defines the server, distributor, ingester, compactor, storage backend, and receiver protocol sections using role variables.
+
+### `templates/tempo.service.j2`
+
+Jinja2 template that renders the systemd unit file installed to `/etc/systemd/system/tempo.service`. References the configuration file path and runs Tempo under the dedicated service user.
+
+---
+
+## Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `tempo_version` | `2.4.1` | Version of Tempo to install |
+| `tempo_arch` | `linux_amd64` | Target architecture for the binary download (`linux_amd64`, `linux_arm64`) |
+| `tempo_user` | `tempo` | System user that runs the service |
+| `tempo_group` | `tempo` | System group for the service user |
+| `tempo_http_port` | `3200` | Port for the Tempo HTTP API and health endpoint |
+| `tempo_grpc_port` | `9095` | Port for the Tempo gRPC API |
+| `tempo_otlp_grpc_port` | `4317` | Port to receive traces via OTLP gRPC |
+| `tempo_otlp_http_port` | `4318` | Port to receive traces via OTLP HTTP |
+| `tempo_config_dir` | `/etc/tempo` | Directory for configuration files |
+| `tempo_data_dir` | `/var/lib/tempo` | Directory for persistent trace data and WAL |
+| `tempo_install_dir` | `/usr/local/bin` | Directory for the installed binary |
+| `tempo_storage_backend` | `local` | Storage backend to use (`local`, `s3`, `gcs`, `azure`) |
+| `tempo_retention_duration` | `720h` | How long to retain trace data (default 30 days) |
+
+> Override any variable in your playbook, inventory, or via `--extra-vars`.
+
+---
+
+## Usage
+
+### Quick Start
+
+```bash
+ansible-playbook -i inventory playbook.yml
+```
+
+### Run Specific Phases
+
+```bash
+# Install binary only
+ansible-playbook -i inventory playbook.yml --tags install
+
+# Configure service only
+ansible-playbook -i inventory playbook.yml --tags configure
+
+# Restart service only
+ansible-playbook -i inventory playbook.yml --tags service
+```
+
+### Example Playbook
+
+```yaml
+---
+- name: Deploy Grafana Tempo
+  hosts: tracing_servers
+  become: true
+  roles:
+    - role: tempo
+      vars:
+        tempo_version: "2.4.1"
+        tempo_arch: "linux_amd64"
+        tempo_user: "tempo"
+        tempo_group: "tempo"
+        tempo_http_port: 3200
+        tempo_storage_backend: "local"
+        tempo_retention_duration: "720h"
+```
+
+---
+
+## Tags
+
+| Tag | Description |
+|-----|-------------|
+| `install` | Download and install the Tempo binary |
+| `configure` | Render and deploy all configuration templates |
+| `service` | Start, stop, or restart the service |
+
+---
+
+## Handlers
+
+| Handler | Trigger Condition | Action |
+|---------|------------------|--------|
+| `restart tempo` | Config or binary change | Restarts the Tempo service |
+| `reload systemd` | Service unit file updated | Reloads the systemd daemon |
+
+---
+
+## Templates
+
+| Template | Destination | Description |
+|----------|-------------|-------------|
+| `tempo.yaml.j2` | `/etc/tempo/tempo.yaml` | Main Tempo pipeline configuration (server, ingester, storage, receivers) |
+| `tempo.service.j2` | `/etc/systemd/system/tempo.service` | Systemd service definition |
+
+---
+
+## Verification
+
+After running the playbook, confirm Tempo is running correctly.
+
+### Check service status
+
+```bash
+systemctl status tempo
+```
+
+### Verify the HTTP API is reachable
+
+```bash
+curl -s http://localhost:3200/ready
+```
+
+Expected output:
+
+```
+ready
+```
+
+### Check overall health
+
+```bash
+curl -s http://localhost:3200/status
+```
+
+Expected output (summary):
+
+```
+Tempo is up and ready to receive traces
+```
+
+### Confirm all listening ports
+
+```bash
+ss -tulpn | grep tempo
+```
+
+Expected output:
+
+```
+LISTEN   0   4096   *:3200   *:*   users:(("tempo",pid=XXXX,fd=3))
+LISTEN   0   4096   *:4317   *:*   users:(("tempo",pid=XXXX,fd=4))
+LISTEN   0   4096   *:4318   *:*   users:(("tempo",pid=XXXX,fd=5))
+```
+
+### Send a test trace via OTLP HTTP
+
+```bash
+curl -s -X POST http://localhost:4318/v1/traces \
+  -H "Content-Type: application/json" \
+  -d '{"resourceSpans": []}'
+```
+
+Expected output:
+
+```json
+{}
+```
+
+---
+
+## Troubleshooting
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Service fails to start | Config YAML syntax error | Run `tempo -config.file=/etc/tempo/tempo.yaml` manually to see the error |
+| Port conflict on 4317/4318 | Another OTLP receiver already running | Change `tempo_otlp_grpc_port` / `tempo_otlp_http_port` or stop the conflicting process |
+| Traces not appearing in Grafana | Grafana datasource URL wrong | Set the Tempo datasource URL to `http://<host>:3200` in Grafana |
+| Data directory permission error | Wrong ownership on data dir | Ensure `tempo_data_dir` is owned by `tempo_user` |
+| High disk usage | Retention period too long | Reduce `tempo_retention_duration` (e.g. `168h` for 7 days) |
+| Binary not found after install | Wrong architecture selected | Verify `tempo_arch` matches the target host (`uname -m`) |
+| `systemctl` not found | Non-systemd system | This role requires systemd — not supported on older init systems |
+
+---
+
+## References
+
+| Resource | Link |
+|----------|------|
+| Grafana Tempo Official Documentation | https://grafana.com/docs/tempo/latest/ |
+| Tempo GitHub | https://github.com/grafana/tempo |
+| Tempo Configuration Reference | https://grafana.com/docs/tempo/latest/configuration/ |
+| OpenTelemetry Protocol (OTLP) | https://opentelemetry.io/docs/specs/otel/protocol/ |
+| Ansible Roles Documentation | https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html |
+| Ansible Handlers Documentation | https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html |
+
+---
+
+## Authors
+
+| Name | Email | Organization |
+|------|-------|-------------|
+| Abhishek Vishwakarma | abhishek.vishwakarma@opstree.com | Opstree Solutions |
+| Shubham Rathi | shubham.rathi@mygurukulam.co | MyGurukulam |
+
+---
+
+## License
+
+This project is licensed under the [Apache 2.0 License](LICENSE).

@@ -1,40 +1,48 @@
 ---
-- name: Creating alertmanager service user
-  user:
-    name: alertmanager
-    shell: /sbin/nologin
+- name: Create alertmanager group
+  ansible.builtin.group:
+    name: "{{ alertmanager_group }}"
     state: present
 
-- name: Downloading the binary file for Alertmanager
-  unarchive:
-    src: "{{ alertmanager_base_url }}/v{{ alertmanager_version }}/alertmanager-{{ alertmanager_version }}.linux-amd64.tar.gz"
-    dest: /opt/
-    remote_src: true
+- name: Create alertmanager user
+  ansible.builtin.user:
+    name: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    system: true
+    shell: /usr/sbin/nologin
 
-- name: Move the binary executable file
-  copy:
-    src: /opt/alertmanager-{{ alertmanager_version }}.linux-amd64/alertmanager
-    dest: /usr/bin/
-    mode: '0700'
-    remote_src: true
-
-- name: Create Data, Configuration and log directory for Alertmanager
-  file:
+- name: Create Alertmanager directories
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: alertmanager
-    group: alertmanager
-  with_items:
-    - /var/lib/alertmanager
-    - /etc/alertmanager
-    - /var/log/alertmanager
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    mode: "0755"
+  loop:
+    - "{{ alertmanager_config_dir }}"
+    - "{{ alertmanager_data_dir }}"
 
-- name: Copying Alertmanager Configuration file
-  template:
-    src: alertmanager.yml.j2
-    dest: /etc/alertmanager/alertmanager.yml
+- name: Download Alertmanager archive
+  ansible.builtin.get_url:
+    url: "{{ alertmanager_download_url }}"
+    dest: "{{ alertmanager_archive_path }}"
+    mode: "0644"
 
-- name: Adding Email Template for Alertmanager
-  copy:
-    src: email.tmpl
-    dest: /etc/alertmanager/email.tmpl
+- name: Create extraction directory
+  ansible.builtin.file:
+    path: "{{ alertmanager_extract_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Extract Alertmanager archive
+  ansible.builtin.unarchive:
+    src: "{{ alertmanager_archive_path }}"
+    dest: "{{ alertmanager_extract_dir }}"
+    remote_src: true
+
+- name: Install Alertmanager binary
+  ansible.builtin.copy:
+    src: "{{ alertmanager_extract_dir }}/alertmanager-{{ alertmanager_version }}.{{ alertmanager_arch }}/alertmanager"
+    dest: "{{ alertmanager_install_dir }}/alertmanager"
+    mode: "0755"
+    remote_src: true

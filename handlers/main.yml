@@ -1,21 +1,9 @@
 ---
-# handlers file for alertmanager
-- name: daemon_reload
-  systemd:
-    daemon_reload: "yes"
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
 
-- name: restart_alertmanager_service
-  service:
-    name: "{{ item }}"
+- name: Restart Alertmanager
+  ansible.builtin.systemd:
+    name: "{{ alertmanager_service_name }}"
     state: restarted
-    enabled: "yes"
-  loop:
-    - alertmanager
-    - prometheus
-
-- name: reload_calert_service
-  service:
-    name: calert
-    state: restarted
-    enabled: "yes"
-...

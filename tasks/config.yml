@@ -1,0 +1,18 @@
+---
+- name: Deploy Alertmanager configuration
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: "{{ alertmanager_config_dir }}/alertmanager.yml"
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    mode: "0644"
+  notify: Restart Alertmanager
+
+- name: Deploy Alertmanager systemd service
+  ansible.builtin.template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart Alertmanager

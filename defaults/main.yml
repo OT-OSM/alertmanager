@@ -1,12 +1,22 @@
 ---
-# defaults file for alertmanager
-alert_version: "0.20.0"
-base_url: "https://github.com/prometheus/alertmanager/releases/download"
-alertmanager_dir: "alertmanager-{{ alert_version }}.linux-amd64"
-download_url: "{{ base_url }}/v{{ alert_version }}/{{ alertmanager_dir }}.tar.gz"
-binary_path: "/usr/local/bin"
-rules_file:
-    - "node_exporter.rules"
+alertmanager_version: "0.27.0"
+alertmanager_arch: "linux-amd64"
 
-templates:
-    - "email.tmpl"
+alertmanager_user: "alertmanager"
+alertmanager_group: "alertmanager"
+
+alertmanager_config_dir: "/etc/alertmanager"
+alertmanager_data_dir: "/var/lib/alertmanager"
+
+alertmanager_install_dir: "/usr/local/bin"
+
+alertmanager_service_name: "alertmanager"
+
+alertmanager_memory_limit: "256M"
+
+alertmanager_resolve_timeout: "5m"
+alertmanager_group_wait: "10s"
+alertmanager_group_interval: "10s"
+alertmanager_repeat_interval: "1h"
+
+alertmanager_webhook_url: "http://127.0.0.1:5001/"
